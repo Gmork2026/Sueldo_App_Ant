@@ -13,6 +13,8 @@ config = context.config
 
 db_url = os.getenv("DATABASE_URL")
 if db_url:
+    if db_url.startswith("postgresql://"):
+        db_url = "postgresql+asyncpg://" + db_url[len("postgresql://"):]
     config.set_main_option("sqlalchemy.url", db_url)
 
 if config.config_file_name is not None:
