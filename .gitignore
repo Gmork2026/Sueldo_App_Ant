@@ -1,0 +1,35 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# Environment
+.env
+.env.local
+.env.production
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Excel with personal data (NEVER commit)
+Excel_Personal.xlsx
+~$*.xlsx
+
+# Node (frontend)
+node_modules/
+.next/
+out/
+
+# Railway
+railway.toml
