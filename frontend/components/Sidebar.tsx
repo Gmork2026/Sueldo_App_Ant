@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "../lib/auth";
+import Logo from "./Logo";
 
 const navItems = [
   { href: "/empleados", label: "Empleados", icon: "👥" },
@@ -18,8 +19,8 @@ export default function Sidebar() {
   return (
     <aside className="w-64 bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] flex flex-col min-h-screen">
       <div className="p-4 border-b border-white/10">
-        <h1 className="text-white text-lg font-bold">AppSueldo</h1>
-        <p className="text-xs mt-1 opacity-70">UPSRA CCT 507/07</p>
+        <Logo size="md" />
+        <p className="text-xs mt-1 opacity-70 text-[var(--sidebar-text)]">Liquidación de sueldos</p>
       </div>
 
       <nav className="flex-1 p-3 space-y-1">

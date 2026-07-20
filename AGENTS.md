@@ -1,8 +1,8 @@
-# AppSueldo — AGENTS.md
+# SueldoYa — AGENTS.md
 
 ## App
 
-Argentine salary calculator for private security workers based on UPSRA CCT 507/07. Backend/Frontend architecture.
+SueldoYa - Argentine salary calculator for private security workers. Backend/Frontend architecture.
 
 ## Architecture
 

@@ -4,7 +4,7 @@ from functools import lru_cache
 
 class Settings(BaseSettings):
     # App
-    APP_NAME: str = "AppSueldo API"
+    APP_NAME: str = "SueldoYa API"
     APP_VERSION: str = "2.0.0"
     DEBUG: bool = False
 

@@ -9,8 +9,8 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "AppSueldo - Liquidación de Sueldos",
-  description: "Calculadora de sueldos para seguridad privada - UPSRA CCT 507/07",
+  title: "SueldoYa - Liquidación de Sueldos",
+  description: "Sistema de liquidación de sueldos",
 };
 
 export default function RootLayout({
