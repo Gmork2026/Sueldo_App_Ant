@@ -31,5 +31,4 @@ node_modules/
 .next/
 out/
 
-# Railway
-railway.toml
+
