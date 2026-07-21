@@ -134,6 +134,8 @@ export const api = {
       request<TimesheetRecord>(`/api/timesheet/${id}`, { method: "PUT", body: JSON.stringify(data) }),
     delete: (id: number) =>
       request<{ ok: boolean }>(`/api/timesheet/${id}`, { method: "DELETE" }),
+    bulk: (data: { employee_id: number; month: number; year: number; entry_time: string; exit_time: string; skip_dates?: string[] }) =>
+      request<TimesheetRecord[]>(`/api/timesheet/bulk`, { method: "POST", body: JSON.stringify(data) }),
   },
 
   payroll: {

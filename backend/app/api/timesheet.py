@@ -10,6 +10,7 @@ from app.schemas.timesheet import (
     TimesheetRecordCreate,
     TimesheetRecordUpdate,
     TimesheetRecordRead,
+    TimesheetBulkFillRequest,
 )
 from app.core.deps import CurrentUser, AdminUser
 
@@ -184,3 +185,67 @@ async def delete_record(record_id: int, user: CurrentUser, db: AsyncSession = De
     await db.delete(record)
     await db.flush()
     return {"ok": True}
+
+
+@router.post("/bulk", response_model=list[TimesheetRecordRead])
+async def bulk_fill_month(
+    data: TimesheetBulkFillRequest,
+    user: CurrentUser,
+    db: AsyncSession = Depends(get_db),
+):
+    if user.role != "admin":
+        from app.models.employee import Employee
+        emp_result = await db.execute(
+            select(Employee).where(
+                Employee.id == data.employee_id, Employee.user_id == user.id
+            )
+        )
+        if not emp_result.scalar_one_or_none():
+            raise HTTPException(status_code=403, detail="Acceso denegado")
+
+    import calendar
+    num_days = calendar.monthrange(data.year, data.month)[1]
+
+    month_str = f"{data.year}-{data.month:02d}"
+    existing_result = await db.execute(
+        select(TimesheetRecord.date).where(
+            TimesheetRecord.employee_id == data.employee_id,
+            TimesheetRecord.date.like(f"{month_str}%"),
+        )
+    )
+    existing_dates = {row[0] for row in existing_result.all()}
+
+    skip_dates = set(data.skip_dates or [])
+    created = []
+
+    for day in range(1, num_days + 1):
+        date_str = f"{data.year}-{data.month:02d}-{day:02d}"
+
+        if date_str in existing_dates or date_str in skip_dates:
+            continue
+
+        d = datetime.strptime(date_str, "%Y-%m-%d").date()
+        if d.weekday() == 6:
+            continue
+
+        is_h, h_name = detect_holiday(date_str)
+
+        total = calc_hours(data.entry_time, data.exit_time)
+
+        record = TimesheetRecord(
+            employee_id=data.employee_id,
+            date=date_str,
+            entry_time=data.entry_time,
+            exit_time=data.exit_time,
+            total_hours=total,
+            is_franco=False,
+            is_holiday=is_h,
+            holiday_name=h_name,
+        )
+        db.add(record)
+        created.append(record)
+
+    await db.flush()
+    for r in created:
+        await db.refresh(r)
+    return created

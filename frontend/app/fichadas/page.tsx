@@ -30,6 +30,7 @@ export default function FichadasPage() {
   const [loading, setLoading] = useState(false);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [bulkFilling, setBulkFilling] = useState(false);
 
   const [form, setForm] = useState({
     entry_time: "",
@@ -99,7 +100,7 @@ export default function FichadasPage() {
         notes: existing.notes || "",
       });
     } else {
-      setForm({ entry_time: "", exit_time: "", is_franco: false, notes: "" });
+      setForm({ entry_time: "07:00", exit_time: "15:00", is_franco: false, notes: "" });
     }
   };
 
@@ -133,6 +134,26 @@ export default function FichadasPage() {
     await api.timesheet.delete(recordMap[selectedDay].id);
     await loadRecords();
     setSelectedDay(null);
+  };
+
+  const handleBulkFill = async () => {
+    if (!selectedEmp) return;
+    if (!confirm(`Rellenar días vacíos de ${MONTH_NAMES[month - 1]} con horario 07:00-15:00?\n\nLos días con registros existentes no se modifican. Los domingos se omiten.`)) return;
+    setBulkFilling(true);
+    try {
+      const created = await api.timesheet.bulk({
+        employee_id: selectedEmp,
+        month,
+        year,
+        entry_time: "07:00",
+        exit_time: "15:00",
+      });
+      await loadRecords();
+      alert(`Se crearon ${created.length} registros.`);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Error al rellenar");
+    }
+    setBulkFilling(false);
   };
 
   const calcAutoHours = () => {
@@ -246,6 +267,16 @@ export default function FichadasPage() {
           </div>
 
           {loading && <div className="text-center text-gray-400 text-sm mt-3">Cargando...</div>}
+
+          <div className="flex justify-center mt-3">
+            <button
+              onClick={handleBulkFill}
+              disabled={bulkFilling}
+              className="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 text-sm font-medium disabled:opacity-50"
+            >
+              {bulkFilling ? "Rellenando..." : "Rellenar mes (07:00-15:00)"}
+            </button>
+          </div>
         </div>
       )}
 

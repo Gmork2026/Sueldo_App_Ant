@@ -37,3 +37,12 @@ class TimesheetMonthRequest(BaseModel):
     employee_id: int
     month: int
     year: int
+
+
+class TimesheetBulkFillRequest(BaseModel):
+    employee_id: int
+    month: int
+    year: int
+    entry_time: str
+    exit_time: str
+    skip_dates: list[str] | None = None
