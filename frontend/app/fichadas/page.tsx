@@ -365,7 +365,7 @@ export default function FichadasPage() {
 
   return (
     <AppLayout>
-      <h1 className="text-2xl font-bold mb-6">Fichadas</h1>
+      <h1 className="text-2xl font-bold mb-6">Ficha horas</h1>
 
       <div className="flex gap-4 mb-6 flex-wrap">
         {isAdmin ? (

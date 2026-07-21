@@ -14,7 +14,7 @@ export default function Sidebar() {
     ...(!isEmployee ? [
       { href: "/empleados", label: "Empleados", icon: "👥" },
     ] : []),
-    { href: "/fichadas", label: "Fichadas", icon: "📋" },
+    { href: "/fichadas", label: "Ficha horas", icon: "📋" },
     ...(!isEmployee ? [
       { href: "/liquidaciones", label: "Liquidaciones", icon: "💰" },
       { href: "/importar", label: "Importar Excel", icon: "📥" },
