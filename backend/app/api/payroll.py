@@ -66,7 +66,7 @@ async def calculate_payroll(
         await db.refresh(existing)
         return existing
 
-    payroll = Payroll(employee_id=data.employee_id, **payroll_data)
+    payroll = Payroll(employee_id=data.employee_id, month=data.month, year=data.year, **payroll_data)
     db.add(payroll)
     await db.flush()
     await db.refresh(payroll)
