@@ -52,15 +52,15 @@ export default function PerfilPage() {
       <h1 className="text-2xl font-bold mb-6">Mi Perfil</h1>
 
       <div className="max-w-lg">
-        <div className="bg-white rounded-xl shadow border p-6 mb-6">
+        <div className="bg-card dark:bg-gray-800 rounded-xl shadow border border-border dark:border-gray-700 p-6 mb-6">
           <h2 className="text-lg font-semibold mb-4">Información de cuenta</h2>
           <div className="space-y-3 text-sm">
             <div className="flex justify-between">
-              <span className="text-gray-500">Email:</span>
+              <span className="text-muted dark:text-gray-400">Email:</span>
               <span className="font-medium">{user?.email}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">Rol:</span>
+              <span className="text-muted dark:text-gray-400">Rol:</span>
               <span className={`px-2 py-0.5 rounded text-xs font-medium text-white ${
                 user?.role === "superadmin" ? "bg-purple-600" :
                 user?.role === "admin" ? "bg-blue-600" : "bg-gray-500"
@@ -71,49 +71,49 @@ export default function PerfilPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow border p-6">
+        <div className="bg-card dark:bg-gray-800 rounded-xl shadow border border-border dark:border-gray-700 p-6">
           <h2 className="text-lg font-semibold mb-4">Cambiar contraseña</h2>
 
           {error && (
-            <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-sm mb-4">{error}</div>
+            <div className="bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg text-sm mb-4">{error}</div>
           )}
           {success && (
-            <div className="bg-green-50 text-green-700 px-4 py-3 rounded-lg text-sm mb-4">
+            <div className="bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-4 py-3 rounded-lg text-sm mb-4">
               Contraseña actualizada correctamente.
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña actual</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contraseña actual</label>
               <input
                 type="password"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-input-bg dark:bg-gray-700 dark:text-white"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nueva contraseña</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nueva contraseña</label>
               <input
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="Mínimo 4 caracteres"
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-input-bg dark:bg-gray-700 dark:text-white"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Confirmar nueva contraseña</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirmar nueva contraseña</label>
               <input
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Repetí la nueva contraseña"
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-input-bg dark:bg-gray-700 dark:text-white"
               />
             </div>
             <button

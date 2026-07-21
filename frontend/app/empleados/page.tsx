@@ -114,20 +114,20 @@ export default function EmpleadosPage() {
       </div>
 
       {showForm && (
-        <div className="bg-white rounded-xl shadow p-6 mb-6 border">
+        <div className="bg-card dark:bg-gray-800 rounded-xl shadow p-6 mb-6 border border-border dark:border-gray-700">
           <h2 className="text-lg font-semibold mb-4">{editing ? "Editar Empleado" : "Nuevo Empleado"}</h2>
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input placeholder="Nombre completo" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required className="px-3 py-2 border rounded-lg" />
-            <input placeholder="DNI" value={form.dni} onChange={(e) => setForm({ ...form, dni: e.target.value })} required className="px-3 py-2 border rounded-lg" />
-            <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} required className="px-3 py-2 border rounded-lg">
+            <input placeholder="Nombre completo" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required className="px-3 py-2 border border-border dark:border-gray-600 rounded-lg bg-input-bg dark:bg-gray-700 dark:text-white" />
+            <input placeholder="DNI" value={form.dni} onChange={(e) => setForm({ ...form, dni: e.target.value })} required className="px-3 py-2 border border-border dark:border-gray-600 rounded-lg bg-input-bg dark:bg-gray-700 dark:text-white" />
+            <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} required className="px-3 py-2 border border-border dark:border-gray-600 rounded-lg bg-input-bg dark:bg-gray-700 dark:text-white">
               <option value="">Seleccionar categoría</option>
               {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Fecha de Alta</label>
-              <input type="date" value={form.admission_date} onChange={(e) => setForm({ ...form, admission_date: e.target.value })} required className="px-3 py-2 border rounded-lg w-full" />
+              <label className="block text-xs text-muted dark:text-gray-400 mb-1">Fecha de Alta</label>
+              <input type="date" value={form.admission_date} onChange={(e) => setForm({ ...form, admission_date: e.target.value })} required className="px-3 py-2 border border-border dark:border-gray-600 rounded-lg w-full bg-input-bg dark:bg-gray-700 dark:text-white" />
             </div>
-            <input placeholder="Legajo (opcional)" value={form.legajo} onChange={(e) => setForm({ ...form, legajo: e.target.value })} className="px-3 py-2 border rounded-lg" />
+            <input placeholder="Legajo (opcional)" value={form.legajo} onChange={(e) => setForm({ ...form, legajo: e.target.value })} className="px-3 py-2 border border-border dark:border-gray-600 rounded-lg bg-input-bg dark:bg-gray-700 dark:text-white" />
 
             {!editing && (
               <div className="md:col-span-2">
@@ -136,19 +136,19 @@ export default function EmpleadosPage() {
                     type="checkbox"
                     checked={createUser}
                     onChange={(e) => setCreateUser(e.target.checked)}
-                    className="w-4 h-4 rounded border-gray-300"
+                    className="w-4 h-4 rounded border-gray-300 dark:border-gray-600"
                   />
-                  <span className="text-sm font-medium text-gray-700">Crear cuenta de usuario para este empleado</span>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Crear cuenta de usuario para este empleado</span>
                 </label>
               </div>
             )}
 
             {createUser && !editing && (
               <>
-                <input type="email" placeholder="Email del empleado" value={userForm.email} onChange={(e) => setUserForm({ ...userForm, email: e.target.value })} required className="px-3 py-2 border rounded-lg" />
-                <input type="password" placeholder="Contraseña temporal" value={userForm.password} onChange={(e) => setUserForm({ ...userForm, password: e.target.value })} required className="px-3 py-2 border rounded-lg" />
+                <input type="email" placeholder="Email del empleado" value={userForm.email} onChange={(e) => setUserForm({ ...userForm, email: e.target.value })} required className="px-3 py-2 border border-border dark:border-gray-600 rounded-lg bg-input-bg dark:bg-gray-700 dark:text-white" />
+                <input type="password" placeholder="Contraseña temporal" value={userForm.password} onChange={(e) => setUserForm({ ...userForm, password: e.target.value })} required className="px-3 py-2 border border-border dark:border-gray-600 rounded-lg bg-input-bg dark:bg-gray-700 dark:text-white" />
                 {isSuperAdmin && (
-                  <select value={userForm.role} onChange={(e) => setUserForm({ ...userForm, role: e.target.value })} className="px-3 py-2 border rounded-lg">
+                  <select value={userForm.role} onChange={(e) => setUserForm({ ...userForm, role: e.target.value })} className="px-3 py-2 border border-border dark:border-gray-600 rounded-lg bg-input-bg dark:bg-gray-700 dark:text-white">
                     <option value="employee">Empleado</option>
                     <option value="admin">Administrador</option>
                   </select>
@@ -160,47 +160,47 @@ export default function EmpleadosPage() {
               <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
                 {editing ? "Guardar Cambios" : "Crear Empleado"}
               </button>
-              <button type="button" onClick={() => { setShowForm(false); setEditing(null); }} className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 text-sm">
+              <button type="button" onClick={() => { setShowForm(false); setEditing(null); }} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 text-sm dark:text-white">
                 Cancelar
               </button>
             </div>
-            {error && <div className="text-red-600 text-sm md:col-span-2">{error}</div>}
+            {error && <div className="text-red-600 dark:text-red-400 text-sm md:col-span-2">{error}</div>}
           </form>
         </div>
       )}
 
       {showLinkAccount !== null && (
-        <div className="bg-white rounded-xl shadow p-6 mb-6 border">
+        <div className="bg-card dark:bg-gray-800 rounded-xl shadow p-6 mb-6 border border-border dark:border-gray-700">
           <h2 className="text-lg font-semibold mb-4">Crear cuenta de usuario</h2>
           <form onSubmit={(e) => { e.preventDefault(); handleLinkAccount(showLinkAccount); }} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input type="email" placeholder="Email del empleado" value={linkForm.email} onChange={(e) => setLinkForm({ ...linkForm, email: e.target.value })} required className="px-3 py-2 border rounded-lg" />
-            <input type="password" placeholder="Contraseña temporal" value={linkForm.password} onChange={(e) => setLinkForm({ ...linkForm, password: e.target.value })} required className="px-3 py-2 border rounded-lg" />
+            <input type="email" placeholder="Email del empleado" value={linkForm.email} onChange={(e) => setLinkForm({ ...linkForm, email: e.target.value })} required className="px-3 py-2 border border-border dark:border-gray-600 rounded-lg bg-input-bg dark:bg-gray-700 dark:text-white" />
+            <input type="password" placeholder="Contraseña temporal" value={linkForm.password} onChange={(e) => setLinkForm({ ...linkForm, password: e.target.value })} required className="px-3 py-2 border border-border dark:border-gray-600 rounded-lg bg-input-bg dark:bg-gray-700 dark:text-white" />
             {isSuperAdmin && (
-              <select value={linkForm.role} onChange={(e) => setLinkForm({ ...linkForm, role: e.target.value })} className="px-3 py-2 border rounded-lg">
+              <select value={linkForm.role} onChange={(e) => setLinkForm({ ...linkForm, role: e.target.value })} className="px-3 py-2 border border-border dark:border-gray-600 rounded-lg bg-input-bg dark:bg-gray-700 dark:text-white">
                 <option value="employee">Empleado</option>
                 <option value="admin">Administrador</option>
               </select>
             )}
             <div className="flex gap-2 md:col-span-2">
               <button type="submit" className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm">Crear Cuenta</button>
-              <button type="button" onClick={() => { setShowLinkAccount(null); setLinkForm({ email: "", password: "", role: "employee" }); }} className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 text-sm">Cancelar</button>
+              <button type="button" onClick={() => { setShowLinkAccount(null); setLinkForm({ email: "", password: "", role: "employee" }); }} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 text-sm dark:text-white">Cancelar</button>
             </div>
-            {error && <div className="text-red-600 text-sm md:col-span-2">{error}</div>}
+            {error && <div className="text-red-600 dark:text-red-400 text-sm md:col-span-2">{error}</div>}
           </form>
         </div>
       )}
 
       {loading ? (
-        <div className="text-gray-500">Cargando empleados...</div>
+        <div className="text-muted dark:text-gray-400">Cargando empleados...</div>
       ) : employees.length === 0 ? (
-        <div className="text-center py-12 text-gray-400">
+        <div className="text-center py-12 text-gray-400 dark:text-gray-500">
           No hay empleados cargados
           {isAdmin && <p className="text-sm mt-2">Creá uno nuevo o importá desde Excel</p>}
         </div>
       ) : (
-        <div className="bg-white rounded-xl shadow border overflow-hidden">
+        <div className="bg-card dark:bg-gray-800 rounded-xl shadow border border-border dark:border-gray-700 overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b">
+            <thead className="bg-gray-50 dark:bg-gray-900 border-b border-border dark:border-gray-700">
               <tr>
                 <th className="text-left px-4 py-3 font-medium">Nombre</th>
                 <th className="text-left px-4 py-3 font-medium">DNI</th>
@@ -213,7 +213,7 @@ export default function EmpleadosPage() {
             </thead>
             <tbody>
               {employees.map((emp) => (
-                <tr key={emp.id} className="border-b hover:bg-gray-50">
+                <tr key={emp.id} className="border-b border-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
                   <td className="px-4 py-3 font-medium">{emp.name}</td>
                   <td className="px-4 py-3">{emp.dni}</td>
                   <td className="px-4 py-3">{emp.category}</td>
@@ -221,18 +221,18 @@ export default function EmpleadosPage() {
                   <td className="px-4 py-3">{emp.admission_date}</td>
                   <td className="px-4 py-3">
                     {emp.user_id ? (
-                      <span className="px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700">Con cuenta</span>
+                      <span className="px-2 py-0.5 rounded text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">Con cuenta</span>
                     ) : (
-                      <span className="px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-700">Sin cuenta</span>
+                      <span className="px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400">Sin cuenta</span>
                     )}
                   </td>
                   {isAdmin && (
                     <td className="px-4 py-3 text-right space-x-2">
-                      <button onClick={() => handleEdit(emp)} className="text-blue-600 hover:underline text-xs">Editar</button>
+                      <button onClick={() => handleEdit(emp)} className="text-blue-600 dark:text-blue-400 hover:underline text-xs">Editar</button>
                       {!emp.user_id && (
-                        <button onClick={() => { setShowLinkAccount(emp.id); setLinkForm({ email: "", password: "", role: "employee" }); }} className="text-green-600 hover:underline text-xs">Crear cuenta</button>
+                        <button onClick={() => { setShowLinkAccount(emp.id); setLinkForm({ email: "", password: "", role: "employee" }); }} className="text-green-600 dark:text-green-400 hover:underline text-xs">Crear cuenta</button>
                       )}
-                      <button onClick={() => handleDelete(emp.id)} className="text-red-600 hover:underline text-xs">Desactivar</button>
+                      <button onClick={() => handleDelete(emp.id)} className="text-red-600 dark:text-red-400 hover:underline text-xs">Desactivar</button>
                     </td>
                   )}
                 </tr>

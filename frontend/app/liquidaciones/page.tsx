@@ -48,53 +48,53 @@ export default function LiquidacionesPage() {
   const formatMoney = (n: number) => new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS" }).format(n);
 
   const Breakdown = ({ p }: { p: Payroll }) => (
-    <div className="bg-gray-50 p-4 rounded-lg mt-2 grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
+    <div className="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg mt-2 grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
       <div>
-        <div className="text-gray-500 text-xs">Básico</div>
+        <div className="text-muted dark:text-gray-400 text-xs">Básico</div>
         <div className="font-medium">{formatMoney(p.basic_salary)}</div>
       </div>
       <div>
-        <div className="text-gray-500 text-xs">Antigüedad ({p.seniority_years} años)</div>
+        <div className="text-muted dark:text-gray-400 text-xs">Antigüedad ({p.seniority_years} años)</div>
         <div className="font-medium">{formatMoney(p.seniority_amount)}</div>
       </div>
       <div>
-        <div className="text-gray-500 text-xs">Presentismo</div>
+        <div className="text-muted dark:text-gray-400 text-xs">Presentismo</div>
         <div className="font-medium">{formatMoney(p.presentismo)}</div>
       </div>
       <div>
-        <div className="text-gray-500 text-xs">Horas extras ({p.overtime_hours}h)</div>
+        <div className="text-muted dark:text-gray-400 text-xs">Horas extras ({p.overtime_hours}h)</div>
         <div className="font-medium">{formatMoney(p.overtime_amount)}</div>
       </div>
       <div>
-        <div className="text-gray-500 text-xs">Feriados ({p.holiday_hours}d)</div>
+        <div className="text-muted dark:text-gray-400 text-xs">Feriados ({p.holiday_hours}d)</div>
         <div className="font-medium">{formatMoney(p.holiday_amount)}</div>
       </div>
       <div>
-        <div className="text-gray-500 text-xs">Viáticos</div>
+        <div className="text-muted dark:text-gray-400 text-xs">Viáticos</div>
         <div className="font-medium">{formatMoney(p.viaticos)}</div>
       </div>
       <div>
-        <div className="text-gray-500 text-xs">No remunerativo</div>
+        <div className="text-muted dark:text-gray-400 text-xs">No remunerativo</div>
         <div className="font-medium">{formatMoney(p.non_remunerative)}</div>
       </div>
-      <div className="border-t pt-2 col-span-2 sm:col-span-3">
+      <div className="border-t border-border dark:border-gray-700 pt-2 col-span-2 sm:col-span-3">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <div>
-            <div className="text-gray-500 text-xs">Bruto</div>
-            <div className="font-bold text-blue-700">{formatMoney(p.gross_salary)}</div>
+            <div className="text-muted dark:text-gray-400 text-xs">Bruto</div>
+            <div className="font-bold text-blue-700 dark:text-blue-400">{formatMoney(p.gross_salary)}</div>
           </div>
           <div>
-            <div className="text-gray-500 text-xs">Deducciones</div>
-            <div className="font-bold text-red-600">{formatMoney(p.deductions)}</div>
+            <div className="text-muted dark:text-gray-400 text-xs">Deducciones</div>
+            <div className="font-bold text-red-600 dark:text-red-400">{formatMoney(p.deductions)}</div>
           </div>
           <div>
-            <div className="text-gray-500 text-xs">Neto</div>
-            <div className="font-bold text-green-700">{formatMoney(p.net_salary)}</div>
+            <div className="text-muted dark:text-gray-400 text-xs">Neto</div>
+            <div className="font-bold text-green-700 dark:text-green-400">{formatMoney(p.net_salary)}</div>
           </div>
           {p.sac_neto > 0 && (
             <div>
-              <div className="text-gray-500 text-xs">SAC Neto</div>
-              <div className="font-bold text-yellow-600">{formatMoney(p.sac_neto)}</div>
+              <div className="text-muted dark:text-gray-400 text-xs">SAC Neto</div>
+              <div className="font-bold text-yellow-600 dark:text-yellow-400">{formatMoney(p.sac_neto)}</div>
             </div>
           )}
         </div>
@@ -108,27 +108,27 @@ export default function LiquidacionesPage() {
 
       <div className="flex gap-4 mb-6 flex-wrap items-end">
         <div>
-          <label className="block text-xs text-gray-500 mb-1">Empleado</label>
-          <select value={selectedEmp || ""} onChange={(e) => setSelectedEmp(Number(e.target.value))} className="px-3 py-2 border rounded-lg text-sm">
+          <label className="block text-xs text-muted dark:text-gray-400 mb-1">Empleado</label>
+          <select value={selectedEmp || ""} onChange={(e) => setSelectedEmp(Number(e.target.value))} className="px-3 py-2 border border-border dark:border-gray-600 rounded-lg text-sm bg-input-bg dark:bg-gray-700 dark:text-white">
             <option value="">Seleccionar empleado</option>
             {employees.map((emp) => <option key={emp.id} value={emp.id}>{emp.name}</option>)}
           </select>
         </div>
         <div>
-          <label className="block text-xs text-gray-500 mb-1">Mes</label>
-          <select value={month} onChange={(e) => setMonth(Number(e.target.value))} className="px-3 py-2 border rounded-lg text-sm">
+          <label className="block text-xs text-muted dark:text-gray-400 mb-1">Mes</label>
+          <select value={month} onChange={(e) => setMonth(Number(e.target.value))} className="px-3 py-2 border border-border dark:border-gray-600 rounded-lg text-sm bg-input-bg dark:bg-gray-700 dark:text-white">
             {monthNames.map((name, i) => <option key={i + 1} value={i + 1}>{name}</option>)}
           </select>
         </div>
         <div>
-          <label className="block text-xs text-gray-500 mb-1">Año</label>
-          <select value={year} onChange={(e) => setYear(Number(e.target.value))} className="px-3 py-2 border rounded-lg text-sm">
+          <label className="block text-xs text-muted dark:text-gray-400 mb-1">Año</label>
+          <select value={year} onChange={(e) => setYear(Number(e.target.value))} className="px-3 py-2 border border-border dark:border-gray-600 rounded-lg text-sm bg-input-bg dark:bg-gray-700 dark:text-white">
             {[2025, 2026, 2027].map((y) => <option key={y} value={y}>{y}</option>)}
           </select>
         </div>
         <div>
-          <label className="block text-xs text-gray-500 mb-1">Días vacaciones</label>
-          <input type="number" min="0" max="30" value={diasVacaciones} onChange={(e) => setDiasVacaciones(Number(e.target.value))} className="px-3 py-2 border rounded-lg text-sm w-20" />
+          <label className="block text-xs text-muted dark:text-gray-400 mb-1">Días vacaciones</label>
+          <input type="number" min="0" max="30" value={diasVacaciones} onChange={(e) => setDiasVacaciones(Number(e.target.value))} className="px-3 py-2 border border-border dark:border-gray-600 rounded-lg text-sm w-20 bg-input-bg dark:bg-gray-700 dark:text-white" />
         </div>
         <button
           onClick={handleCalculate}
@@ -141,28 +141,28 @@ export default function LiquidacionesPage() {
 
       {selectedEmp && (
         loading ? (
-          <div className="text-gray-500">Cargando...</div>
+          <div className="text-muted dark:text-gray-400">Cargando...</div>
         ) : payrolls.length === 0 ? (
-          <div className="text-center py-8 text-gray-400">No hay liquidaciones para este empleado</div>
+          <div className="text-center py-8 text-gray-400 dark:text-gray-500">No hay liquidaciones para este empleado</div>
         ) : (
           <div className="space-y-3">
             {payrolls.map((p) => {
               const isExpanded = expandedId === p.id;
               return (
-                <div key={p.id} className="bg-white rounded-xl shadow border overflow-hidden">
+                <div key={p.id} className="bg-card dark:bg-gray-800 rounded-xl shadow border border-border dark:border-gray-700 overflow-hidden">
                   <button
                     onClick={() => setExpandedId(isExpanded ? null : p.id)}
-                    className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 text-left"
+                    className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 text-left"
                   >
                     <div className="flex items-center gap-4">
                       <span className="font-medium text-sm">{monthNames[p.month - 1]} {p.year}</span>
-                      <span className="text-xs text-gray-500 hidden sm:inline">
+                      <span className="text-xs text-muted dark:text-gray-400 hidden sm:inline">
                         Básico: {formatMoney(p.basic_salary)}
                       </span>
                     </div>
                     <div className="flex items-center gap-4">
-                      <span className="font-bold text-green-700 text-sm">{formatMoney(p.net_salary)}</span>
-                      <svg className={`w-4 h-4 text-gray-400 transition-transform ${isExpanded ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <span className="font-bold text-green-700 dark:text-green-400 text-sm">{formatMoney(p.net_salary)}</span>
+                      <svg className={`w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform ${isExpanded ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
                     </div>

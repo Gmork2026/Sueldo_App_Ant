@@ -296,7 +296,7 @@ export default function FichadasPage() {
           <select
             value={selectedEmp || ""}
             onChange={(e) => setSelectedEmp(Number(e.target.value))}
-            className="px-3 py-2 border rounded-lg text-sm"
+            className="px-3 py-2 border border-border dark:border-gray-600 rounded-lg text-sm bg-input-bg dark:bg-gray-700 dark:text-white"
           >
             <option value="">Seleccionar empleado</option>
             {employees.map((emp) => (
@@ -304,16 +304,16 @@ export default function FichadasPage() {
             ))}
           </select>
         ) : employees.length === 1 ? (
-          <div className="px-3 py-2 bg-gray-100 rounded-lg text-sm font-medium">{employees[0]?.name}</div>
+          <div className="px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg text-sm font-medium">{employees[0]?.name}</div>
         ) : null}
 
-        <select value={month} onChange={(e) => setMonth(Number(e.target.value))} className="px-3 py-2 border rounded-lg text-sm">
+        <select value={month} onChange={(e) => setMonth(Number(e.target.value))} className="px-3 py-2 border border-border dark:border-gray-600 rounded-lg text-sm bg-input-bg dark:bg-gray-700 dark:text-white">
           {MONTH_NAMES.map((name, i) => (
             <option key={i + 1} value={i + 1}>{name}</option>
           ))}
         </select>
 
-        <select value={year} onChange={(e) => setYear(Number(e.target.value))} className="px-3 py-2 border rounded-lg text-sm">
+        <select value={year} onChange={(e) => setYear(Number(e.target.value))} className="px-3 py-2 border border-border dark:border-gray-600 rounded-lg text-sm bg-input-bg dark:bg-gray-700 dark:text-white">
           {[2025, 2026, 2027].map((y) => (
             <option key={y} value={y}>{y}</option>
           ))}
@@ -322,23 +322,23 @@ export default function FichadasPage() {
 
       {selectedEmp && (
         <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-xl shadow p-4 border text-center">
-            <div className="text-2xl font-bold text-blue-600">{totalHours.toFixed(1)}</div>
-            <div className="text-xs text-gray-500">Horas totales</div>
+          <div className="bg-card dark:bg-gray-800 rounded-xl shadow p-4 border border-border dark:border-gray-700 text-center">
+            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{totalHours.toFixed(1)}</div>
+            <div className="text-xs text-muted dark:text-gray-400">Horas totales</div>
           </div>
-          <div className="bg-white rounded-xl shadow p-4 border text-center">
-            <div className="text-2xl font-bold text-green-600">{totalWorkDays}</div>
-            <div className="text-xs text-gray-500">Días trabajados</div>
+          <div className="bg-card dark:bg-gray-800 rounded-xl shadow p-4 border border-border dark:border-gray-700 text-center">
+            <div className="text-2xl font-bold text-green-600 dark:text-green-400">{totalWorkDays}</div>
+            <div className="text-xs text-muted dark:text-gray-400">Días trabajados</div>
           </div>
-          <div className="bg-white rounded-xl shadow p-4 border text-center">
-            <div className="text-2xl font-bold text-purple-600">{totalFrancos}</div>
-            <div className="text-xs text-gray-500">Francos</div>
+          <div className="bg-card dark:bg-gray-800 rounded-xl shadow p-4 border border-border dark:border-gray-700 text-center">
+            <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{totalFrancos}</div>
+            <div className="text-xs text-muted dark:text-gray-400">Francos</div>
           </div>
         </div>
       )}
 
       {selectedEmp && (
-        <div className="bg-white rounded-xl shadow border p-4 mb-6">
+        <div className="bg-card dark:bg-gray-800 rounded-xl shadow border border-border dark:border-gray-700 p-4 mb-6">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-semibold">{MONTH_NAMES[month - 1]} {year}</h2>
             <div className="flex items-center gap-2">
@@ -347,21 +347,21 @@ export default function FichadasPage() {
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   multiSelectMode
                     ? "bg-blue-600 text-white"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                 }`}
               >
                 {multiSelectMode ? "Salir selección" : "Seleccionar varios"}
               </button>
               {multiSelectMode && (
                 <>
-                  <button onClick={selectAllDays} className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-xs font-medium hover:bg-gray-200">
+                  <button onClick={selectAllDays} className="px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg text-xs font-medium hover:bg-gray-200 dark:hover:bg-gray-600">
                     Todos
                   </button>
-                  <button onClick={clearSelection} className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-xs font-medium hover:bg-gray-200">
+                  <button onClick={clearSelection} className="px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg text-xs font-medium hover:bg-gray-200 dark:hover:bg-gray-600">
                     Limpiar
                   </button>
                   {selectedDays.size > 0 && (
-                    <span className="text-xs text-blue-600 font-medium">{selectedDays.size} día{selectedDays.size !== 1 ? "s" : ""}</span>
+                    <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">{selectedDays.size} día{selectedDays.size !== 1 ? "s" : ""}</span>
                   )}
                 </>
               )}
@@ -369,12 +369,12 @@ export default function FichadasPage() {
           </div>
 
           {multiSelectMode && (
-            <div className="text-xs text-gray-400 mb-2">Click para seleccionar/deseleccionar · Shift+click para seleccionar rango</div>
+            <div className="text-xs text-gray-400 dark:text-gray-500 mb-2">Click para seleccionar/deseleccionar · Shift+click para seleccionar rango</div>
           )}
 
           <div className="grid grid-cols-7 gap-1 mb-1">
             {DAY_NAMES.map((d) => (
-              <div key={d} className="text-center text-xs font-medium text-gray-500 py-1">{d}</div>
+              <div key={d} className="text-center text-xs font-medium text-muted dark:text-gray-400 py-1">{d}</div>
             ))}
           </div>
 
@@ -388,18 +388,18 @@ export default function FichadasPage() {
               const isSelectedMulti = selectedDays.has(ds);
               const isToday = new Date().toISOString().slice(0, 10) === ds;
 
-              let bg = "bg-gray-50 hover:bg-gray-100";
-              let textColor = "text-gray-700";
-              if (rec?.is_franco) { bg = "bg-purple-50 hover:bg-purple-100"; textColor = "text-purple-700"; }
-              else if (rec?.is_holiday) { bg = "bg-orange-50 hover:bg-orange-100"; textColor = "text-orange-700"; }
-              else if (rec && rec.total_hours > 0) { bg = "bg-green-50 hover:bg-green-100"; textColor = "text-green-700"; }
+              let bg = "bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700";
+              let textColor = "text-gray-700 dark:text-gray-200";
+              if (rec?.is_franco) { bg = "bg-purple-50 dark:bg-purple-900/30 hover:bg-purple-100 dark:hover:bg-purple-900/50"; textColor = "text-purple-700 dark:text-purple-300"; }
+              else if (rec?.is_holiday) { bg = "bg-orange-50 dark:bg-orange-900/30 hover:bg-orange-100 dark:hover:bg-orange-900/50"; textColor = "text-orange-700 dark:text-orange-300"; }
+              else if (rec && rec.total_hours > 0) { bg = "bg-green-50 dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/50"; textColor = "text-green-700 dark:text-green-300"; }
 
               const ringClass = multiSelectMode && isSelectedMulti
-                ? "ring-2 ring-blue-500 bg-blue-100"
+                ? "ring-2 ring-blue-500 bg-blue-100 dark:bg-blue-900/40"
                 : isSelectedSingle
                   ? "ring-2 ring-blue-500"
                   : isToday
-                    ? "ring-1 ring-blue-300"
+                    ? "ring-1 ring-blue-300 dark:ring-blue-600"
                     : "border-transparent";
 
               return (
@@ -410,7 +410,7 @@ export default function FichadasPage() {
                 >
                   {multiSelectMode && (
                     <div className={`absolute top-1 right-1 w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
-                      isSelectedMulti ? "bg-blue-500 border-blue-500" : "border-gray-300 bg-white"
+                      isSelectedMulti ? "bg-blue-500 border-blue-500" : "border-gray-300 dark:border-gray-500 bg-white dark:bg-gray-700"
                     }`}>
                       {isSelectedMulti && (
                         <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -420,20 +420,20 @@ export default function FichadasPage() {
                     </div>
                   )}
                   <div className={`text-xs font-bold ${textColor}`}>{day}</div>
-                  {rec?.is_franco && <div className="text-[10px] text-purple-600 font-medium">Franco</div>}
-                  {rec?.is_holiday && <div className="text-[10px] text-orange-600 font-medium truncate">{rec.holiday_name || "Fer."}</div>}
+                  {rec?.is_franco && <div className="text-[10px] text-purple-600 dark:text-purple-400 font-medium">Franco</div>}
+                  {rec?.is_holiday && <div className="text-[10px] text-orange-600 dark:text-orange-400 font-medium truncate">{rec.holiday_name || "Fer."}</div>}
                   {rec && !rec.is_franco && rec.total_hours > 0 && (
-                    <div className="text-[10px] text-green-600 font-medium">{rec.total_hours}h</div>
+                    <div className="text-[10px] text-green-600 dark:text-green-400 font-medium">{rec.total_hours}h</div>
                   )}
                   {rec && !rec.is_franco && rec.entry_time && (
-                    <div className="text-[9px] text-gray-400 truncate">{rec.entry_time}-{rec.exit_time || "?"}</div>
+                    <div className="text-[9px] text-gray-400 dark:text-gray-500 truncate">{rec.entry_time}-{rec.exit_time || "?"}</div>
                   )}
                 </button>
               );
             })}
           </div>
 
-          {loading && <div className="text-center text-gray-400 text-sm mt-3">Cargando...</div>}
+          {loading && <div className="text-center text-gray-400 dark:text-gray-500 text-sm mt-3">Cargando...</div>}
 
           <div className="flex justify-center mt-3">
             <button
@@ -448,35 +448,35 @@ export default function FichadasPage() {
       )}
 
       {multiSelectMode && selectedDays.size > 0 && (
-        <div className="bg-blue-50 rounded-xl shadow p-6 border border-blue-200 mb-6">
+        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl shadow p-6 border border-blue-200 dark:border-blue-800 mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-blue-800">
+            <h2 className="text-lg font-semibold text-blue-800 dark:text-blue-300">
               Editar {selectedDays.size} día{selectedDays.size !== 1 ? "s" : ""} seleccionado{selectedDays.size !== 1 ? "s" : ""}
             </h2>
-            <button onClick={clearSelection} className="text-blue-400 hover:text-blue-600 text-xl">&times;</button>
+            <button onClick={clearSelection} className="text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 text-xl">&times;</button>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-end">
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Entrada</label>
+              <label className="block text-xs text-muted dark:text-gray-400 mb-1">Entrada</label>
               <input
                 type="time"
                 value={bulkForm.entry_time}
                 onChange={(e) => setBulkForm({ ...bulkForm, entry_time: e.target.value })}
-                className="px-3 py-2 border rounded-lg text-sm"
+                className="px-3 py-2 border border-border dark:border-gray-600 rounded-lg text-sm bg-input-bg dark:bg-gray-700 dark:text-white"
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Salida</label>
+              <label className="block text-xs text-muted dark:text-gray-400 mb-1">Salida</label>
               <input
                 type="time"
                 value={bulkForm.exit_time}
                 onChange={(e) => setBulkForm({ ...bulkForm, exit_time: e.target.value })}
-                className="px-3 py-2 border rounded-lg text-sm"
+                className="px-3 py-2 border border-border dark:border-gray-600 rounded-lg text-sm bg-input-bg dark:bg-gray-700 dark:text-white"
               />
             </div>
             {bulkForm.entry_time && bulkForm.exit_time && (
-              <div className="bg-blue-100 px-3 py-2 rounded-lg text-sm text-blue-700 font-medium">
+              <div className="bg-blue-100 dark:bg-blue-800/40 px-3 py-2 rounded-lg text-sm text-blue-700 dark:text-blue-300 font-medium">
                 = {calcBulkAutoHours()}hs
               </div>
             )}
@@ -491,12 +491,12 @@ export default function FichadasPage() {
               <label htmlFor="bulk-franco" className="text-sm">Franco</label>
             </div>
             <div className="flex-1 min-w-0">
-              <label className="block text-xs text-gray-500 mb-1">Notas</label>
+              <label className="block text-xs text-muted dark:text-gray-400 mb-1">Notas</label>
               <input
                 type="text"
                 value={bulkForm.notes}
                 onChange={(e) => setBulkForm({ ...bulkForm, notes: e.target.value })}
-                className="w-full px-3 py-2 border rounded-lg text-sm"
+                className="w-full px-3 py-2 border border-border dark:border-gray-600 rounded-lg text-sm bg-input-bg dark:bg-gray-700 dark:text-white"
                 placeholder="Opcional"
               />
             </div>
@@ -514,35 +514,35 @@ export default function FichadasPage() {
       )}
 
       {selectedDay && (
-        <div className="bg-white rounded-xl shadow p-6 border">
+        <div className="bg-card dark:bg-gray-800 rounded-xl shadow p-6 border border-border dark:border-gray-700">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">
               {new Date(selectedDay + "T12:00:00").toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "long" })}
             </h2>
-            <button onClick={() => setSelectedDay(null)} className="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
+            <button onClick={() => setSelectedDay(null)} className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 text-xl">&times;</button>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-end">
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Entrada</label>
+              <label className="block text-xs text-muted dark:text-gray-400 mb-1">Entrada</label>
               <input
                 type="time"
                 value={form.entry_time}
                 onChange={(e) => setForm({ ...form, entry_time: e.target.value })}
-                className="px-3 py-2 border rounded-lg text-sm"
+                className="px-3 py-2 border border-border dark:border-gray-600 rounded-lg text-sm bg-input-bg dark:bg-gray-700 dark:text-white"
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Salida</label>
+              <label className="block text-xs text-muted dark:text-gray-400 mb-1">Salida</label>
               <input
                 type="time"
                 value={form.exit_time}
                 onChange={(e) => setForm({ ...form, exit_time: e.target.value })}
-                className="px-3 py-2 border rounded-lg text-sm"
+                className="px-3 py-2 border border-border dark:border-gray-600 rounded-lg text-sm bg-input-bg dark:bg-gray-700 dark:text-white"
               />
             </div>
             {form.entry_time && form.exit_time && (
-              <div className="bg-blue-50 px-3 py-2 rounded-lg text-sm text-blue-700 font-medium">
+              <div className="bg-blue-50 dark:bg-blue-900/30 px-3 py-2 rounded-lg text-sm text-blue-700 dark:text-blue-300 font-medium">
                 = {calcAutoHours()}hs
               </div>
             )}
@@ -557,12 +557,12 @@ export default function FichadasPage() {
               <label htmlFor="franco" className="text-sm">Franco</label>
             </div>
             <div className="flex-1 min-w-0">
-              <label className="block text-xs text-gray-500 mb-1">Notas</label>
+              <label className="block text-xs text-muted dark:text-gray-400 mb-1">Notas</label>
               <input
                 type="text"
                 value={form.notes}
                 onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                className="w-full px-3 py-2 border rounded-lg text-sm"
+                className="w-full px-3 py-2 border border-border dark:border-gray-600 rounded-lg text-sm bg-input-bg dark:bg-gray-700 dark:text-white"
                 placeholder="Opcional"
               />
             </div>
@@ -577,7 +577,7 @@ export default function FichadasPage() {
               {recordMap[selectedDay] && (
                 <button
                   onClick={handleDelete}
-                  className="px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 text-sm"
+                  className="px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 text-sm"
                 >
                   Eliminar
                 </button>

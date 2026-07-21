@@ -83,9 +83,9 @@ export default function UsuariosPage() {
   };
 
   const roleBadge = (role: string) => {
-    if (role === "superadmin") return <span className="px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-700">Super Admin</span>;
-    if (role === "admin") return <span className="px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700">Admin</span>;
-    return <span className="px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">Empleado</span>;
+    if (role === "superadmin") return <span className="px-2 py-0.5 rounded text-xs font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400">Super Admin</span>;
+    if (role === "admin") return <span className="px-2 py-0.5 rounded text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">Admin</span>;
+    return <span className="px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">Empleado</span>;
   };
 
   if (!isSuperAdmin && !loading) {
@@ -105,7 +105,7 @@ export default function UsuariosPage() {
       </div>
 
       {showForm && (
-        <div className="bg-white rounded-xl shadow p-6 mb-6 border">
+        <div className="bg-card dark:bg-gray-800 rounded-xl shadow p-6 mb-6 border border-border dark:border-gray-700">
           <h2 className="text-lg font-semibold mb-4">{editing ? "Editar Usuario" : "Nuevo Usuario"}</h2>
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <input
@@ -114,7 +114,7 @@ export default function UsuariosPage() {
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               required
-              className="px-3 py-2 border rounded-lg"
+              className="px-3 py-2 border border-border dark:border-gray-600 rounded-lg bg-input-bg dark:bg-gray-700 dark:text-white"
             />
             <input
               placeholder={editing ? "Nueva contraseña (vacío = no cambiar)" : "Contraseña"}
@@ -122,12 +122,12 @@ export default function UsuariosPage() {
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               required={!editing}
-              className="px-3 py-2 border rounded-lg"
+              className="px-3 py-2 border border-border dark:border-gray-600 rounded-lg bg-input-bg dark:bg-gray-700 dark:text-white"
             />
             <select
               value={form.role}
               onChange={(e) => setForm({ ...form, role: e.target.value })}
-              className="px-3 py-2 border rounded-lg"
+              className="px-3 py-2 border border-border dark:border-gray-600 rounded-lg bg-input-bg dark:bg-gray-700 dark:text-white"
             >
               <option value="employee">Empleado</option>
               <option value="admin">Administrador</option>
@@ -136,25 +136,25 @@ export default function UsuariosPage() {
               <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
                 {editing ? "Guardar Cambios" : "Crear Usuario"}
               </button>
-              <button type="button" onClick={() => { setShowForm(false); setEditing(null); }} className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 text-sm">
+              <button type="button" onClick={() => { setShowForm(false); setEditing(null); }} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 text-sm dark:text-white">
                 Cancelar
               </button>
             </div>
-            {error && <div className="text-red-600 text-sm md:col-span-3">{error}</div>}
+            {error && <div className="text-red-600 dark:text-red-400 text-sm md:col-span-3">{error}</div>}
           </form>
         </div>
       )}
 
       {loading ? (
-        <div className="text-gray-500">Cargando usuarios...</div>
+        <div className="text-muted dark:text-gray-400">Cargando usuarios...</div>
       ) : users.length === 0 ? (
-        <div className="text-center py-12 text-gray-400">
-          No hay usuarios. Usá <code className="bg-gray-100 px-1 rounded">POST /api/auth/seed</code> para crear el primer superadmin.
+        <div className="text-center py-12 text-gray-400 dark:text-gray-500">
+          No hay usuarios. Usá <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded">POST /api/auth/seed</code> para crear el primer superadmin.
         </div>
       ) : (
-        <div className="bg-white rounded-xl shadow border overflow-hidden">
+        <div className="bg-card dark:bg-gray-800 rounded-xl shadow border border-border dark:border-gray-700 overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b">
+            <thead className="bg-gray-50 dark:bg-gray-900 border-b border-border dark:border-gray-700">
               <tr>
                 <th className="text-left px-4 py-3 font-medium">Email</th>
                 <th className="text-left px-4 py-3 font-medium">Rol</th>
@@ -164,13 +164,13 @@ export default function UsuariosPage() {
             </thead>
             <tbody>
               {users.map((u) => (
-                <tr key={u.id} className="border-b hover:bg-gray-50">
+                <tr key={u.id} className="border-b border-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
                   <td className="px-4 py-3 font-medium">{u.email}</td>
                   <td className="px-4 py-3">{roleBadge(u.role)}</td>
-                  <td className="px-4 py-3 text-gray-500">{new Date(u.created_at).toLocaleDateString("es-AR")}</td>
+                  <td className="px-4 py-3 text-muted dark:text-gray-400">{new Date(u.created_at).toLocaleDateString("es-AR")}</td>
                   <td className="px-4 py-3 text-right space-x-2">
-                    <button onClick={() => handleEdit(u)} className="text-blue-600 hover:underline text-xs">Editar</button>
-                    <button onClick={() => handleDelete(u.id, u.email)} className="text-red-600 hover:underline text-xs">Eliminar</button>
+                    <button onClick={() => handleEdit(u)} className="text-blue-600 dark:text-blue-400 hover:underline text-xs">Editar</button>
+                    <button onClick={() => handleDelete(u.id, u.email)} className="text-red-600 dark:text-red-400 hover:underline text-xs">Eliminar</button>
                   </td>
                 </tr>
               ))}

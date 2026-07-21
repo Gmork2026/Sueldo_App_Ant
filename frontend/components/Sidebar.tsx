@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "../lib/auth";
 import Logo from "./Logo";
+import { ThemeToggle } from "../lib/theme";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -25,7 +26,7 @@ export default function Sidebar() {
   ];
 
   const roleLabel = isSuperAdmin ? "Super Admin" : isAdmin ? "Admin" : "Empleado";
-  const roleColor = isSuperAdmin ? "bg-purple-600" : isAdmin ? "bg-blue-600" : "bg-white/20";
+  const roleColor = isSuperAdmin ? "bg-purple-600" : isAdmin ? "bg-blue-600" : "bg-white/20 dark:bg-white/10";
 
   return (
     <aside className="w-64 bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] flex flex-col min-h-screen">
@@ -55,7 +56,10 @@ export default function Sidebar() {
       </nav>
 
       <div className="p-3 border-t border-white/10">
-        <div className="px-3 py-2 text-xs opacity-70 truncate">{user?.email}</div>
+        <div className="flex items-center justify-between mb-2">
+          <div className="px-3 py-2 text-xs opacity-70 truncate flex-1">{user?.email}</div>
+          <ThemeToggle className="text-[var(--sidebar-text)] hover:text-white hover:bg-white/10" />
+        </div>
         <div className="px-3 py-1 text-xs">
           <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium text-white ${roleColor}`}>
             {roleLabel}

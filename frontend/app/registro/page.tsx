@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Logo from "../../components/Logo";
 import { api, setAuthToken } from "../../lib/api";
+import { ThemeToggle } from "../../lib/theme";
 
 export default function RegistroPage() {
   const [step, setStep] = useState<1 | 2>(1);
@@ -112,11 +113,11 @@ export default function RegistroPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-        <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md text-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 w-full max-w-md text-center">
           <div className="text-5xl mb-4">✅</div>
-          <h1 className="text-2xl font-bold text-green-700 mb-2">Cuenta creada</h1>
-          <p className="text-gray-600 mb-6">
+          <h1 className="text-2xl font-bold text-green-700 dark:text-green-400 mb-2">Cuenta creada</h1>
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
             {isNewEmployee
               ? "Tu cuenta y ficha de empleado fueron creadas. Ya podés cargar tus horas."
               : "Tu cuenta fue creada exitosamente. Ya podés iniciar sesión."}
@@ -142,28 +143,31 @@ export default function RegistroPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle className="text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700" />
+      </div>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 w-full max-w-md">
         <div className="text-center mb-6">
           <Logo size="lg" />
-          <p className="text-gray-500 mt-3 text-sm">Creá tu cuenta de empleado</p>
+          <p className="text-gray-500 dark:text-gray-400 mt-3 text-sm">Creá tu cuenta de empleado</p>
         </div>
 
         {error && (
-          <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-sm mb-4">{error}</div>
+          <div className="bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg text-sm mb-4">{error}</div>
         )}
 
         {step === 1 ? (
           <form onSubmit={handleSearchDNIOnly} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">DNI</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">DNI</label>
               <input
                 type="text"
                 value={dni}
                 onChange={(e) => setDni(e.target.value)}
                 placeholder="Ingresá tu DNI"
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg bg-white dark:bg-gray-700 dark:text-white"
               />
             </div>
             <button
@@ -177,34 +181,34 @@ export default function RegistroPage() {
         ) : (
           <form onSubmit={handleRegister} className="space-y-4">
             {isNewEmployee ? (
-              <div className="bg-yellow-50 text-yellow-700 px-4 py-3 rounded-lg text-sm">
+              <div className="bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 px-4 py-3 rounded-lg text-sm">
                 No encontramos tu DNI. Completá tus datos para crear tu ficha.
               </div>
             ) : (
-              <div className="bg-blue-50 text-blue-700 px-4 py-3 rounded-lg text-sm">
+              <div className="bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-4 py-3 rounded-lg text-sm">
                 Empleado encontrado: <strong>{employeeName}</strong>
               </div>
             )}
             {isNewEmployee && (
               <>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Nombre completo</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre completo</label>
                   <input
                     type="text"
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
                     placeholder="Tu nombre y apellido"
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 dark:text-white"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Categoría</label>
                   <select
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value)}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 dark:text-white"
                   >
                     <option value="">Seleccionar categoría</option>
                     <option value="Vigilador General">Vigilador General</option>
@@ -219,49 +223,49 @@ export default function RegistroPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Legajo</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Legajo</label>
                   <input
                     type="text"
                     value={newLegajo}
                     onChange={(e) => setNewLegajo(e.target.value)}
                     placeholder="Tu número de legajo"
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 dark:text-white"
                   />
                 </div>
               </>
             )}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="tu@email.com"
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 dark:text-white"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contraseña</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Mínimo 4 caracteres"
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 dark:text-white"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Confirmar contraseña</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirmar contraseña</label>
               <input
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Repetí tu contraseña"
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 dark:text-white"
               />
             </div>
             <button
@@ -274,16 +278,16 @@ export default function RegistroPage() {
             <button
               type="button"
               onClick={() => { setStep(1); setEmployeeName(""); setIsNewEmployee(false); setError(""); setNewName(""); setNewCategory(""); setNewLegajo(""); }}
-              className="w-full py-2 text-gray-500 hover:text-gray-700 text-sm"
+              className="w-full py-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-sm"
             >
               ← Volver
             </button>
           </form>
         )}
 
-        <div className="mt-6 text-center text-sm text-gray-500">
+        <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
           ¿Ya tenés cuenta?{" "}
-          <Link href="/login" className="text-blue-600 hover:underline font-medium">
+          <Link href="/login" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
             Iniciá sesión
           </Link>
         </div>

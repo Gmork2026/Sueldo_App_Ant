@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "../../lib/auth";
 import Logo from "../../components/Logo";
+import { ThemeToggle } from "../../lib/theme";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -26,42 +27,45 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle className="text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700" />
+      </div>
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-2">
             <Logo size="lg" />
           </div>
-          <p className="text-sm text-gray-500 mt-1">Liquidación de sueldos</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Liquidación de sueldos</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 dark:text-white"
               placeholder="tu@email.com"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contraseña</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 dark:text-white"
               placeholder="••••••••"
             />
           </div>
 
           {error && (
-            <div className="bg-red-50 text-red-700 px-3 py-2 rounded-lg text-sm">{error}</div>
+            <div className="bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-3 py-2 rounded-lg text-sm">{error}</div>
           )}
 
           <button
@@ -73,9 +77,9 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="mt-6 text-center text-sm text-gray-500">
+        <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
           ¿No tenés cuenta?{" "}
-          <Link href="/registro" className="text-blue-600 hover:underline font-medium">
+          <Link href="/registro" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
             Registrate acá
           </Link>
         </div>

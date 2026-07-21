@@ -45,12 +45,12 @@ export default function ImportarPage() {
     <AppLayout>
       <h1 className="text-2xl font-bold mb-6">Importar Empleados desde Excel</h1>
 
-      <div className="bg-white rounded-xl shadow p-6 border max-w-2xl">
-        <p className="text-sm text-gray-600 mb-4">
+      <div className="bg-card dark:bg-gray-800 rounded-xl shadow p-6 border border-border dark:border-gray-700 max-w-2xl">
+        <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
           Subí un archivo Excel (.xlsx) con los datos de los empleados.
           El sistema reconoce estas columnas: <strong>VIGILADOR</strong> (nombre), <strong>DNI</strong>, <strong>CATEGORIA</strong>, <strong>F. ALTA</strong> (fecha de alta en la empresa), <strong>MES ALTA</strong>, <strong>LEG</strong> (legajo), <strong>MAIL</strong>.
         </p>
-        <p className="text-xs text-gray-400 mb-4">
+        <p className="text-xs text-gray-400 dark:text-gray-500 mb-4">
           Nota: &quot;Fecha de Alta&quot; es la fecha en que el empleado ingresó a la empresa, no es un horario ni día de semana.
         </p>
 
@@ -63,7 +63,7 @@ export default function ImportarPage() {
               setPreview(null);
               setResult(null);
             }}
-            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            className="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 dark:file:bg-blue-900/30 file:text-blue-700 dark:file:text-blue-400 hover:file:bg-blue-100 dark:hover:file:bg-blue-900/50"
           />
         </div>
 
@@ -86,21 +86,21 @@ export default function ImportarPage() {
           )}
         </div>
 
-        {error && <div className="mt-4 bg-red-50 text-red-700 px-3 py-2 rounded-lg text-sm">{error}</div>}
+        {error && <div className="mt-4 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-3 py-2 rounded-lg text-sm">{error}</div>}
 
         {preview && (
-          <div className="mt-4 bg-blue-50 p-4 rounded-lg">
-            <h3 className="font-medium text-blue-800 mb-2">Vista previa</h3>
-            <pre className="text-xs text-blue-700 overflow-auto max-h-64">
+          <div className="mt-4 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+            <h3 className="font-medium text-blue-800 dark:text-blue-300 mb-2">Vista previa</h3>
+            <pre className="text-xs text-blue-700 dark:text-blue-400 overflow-auto max-h-64">
               {JSON.stringify(preview, null, 2)}
             </pre>
           </div>
         )}
 
         {result && (
-          <div className="mt-4 bg-green-50 p-4 rounded-lg">
-            <h3 className="font-medium text-green-800 mb-2">Importación completada</h3>
-            <pre className="text-xs text-green-700 overflow-auto max-h-64">
+          <div className="mt-4 bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+            <h3 className="font-medium text-green-800 dark:text-green-300 mb-2">Importación completada</h3>
+            <pre className="text-xs text-green-700 dark:text-green-400 overflow-auto max-h-64">
               {JSON.stringify(result, null, 2)}
             </pre>
           </div>
