@@ -12,7 +12,7 @@ router = APIRouter(prefix="/api/employees", tags=["employees"])
 
 @router.get("", response_model=list[EmployeeRead])
 async def list_employees(user: CurrentUser, db: AsyncSession = Depends(get_db)):
-    if user.role == "admin":
+    if user.role in ("admin", "superadmin"):
         result = await db.execute(select(Employee).where(Employee.active == True))
     else:
         result = await db.execute(
