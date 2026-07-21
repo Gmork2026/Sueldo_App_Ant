@@ -103,7 +103,7 @@ async def login(data: UserLogin, response: Response, db: AsyncSession = Depends(
         value=token,
         httponly=True,
         secure=is_prod,
-        samesite="lax",
+        samesite="none" if is_prod else "lax",
         max_age=3600,
     )
     return TokenResponse(
