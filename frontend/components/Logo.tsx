@@ -8,11 +8,11 @@ export default function Logo({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
   return (
     <span className={`inline-flex items-baseline font-black italic ${sizes[size].sueldo}`}>
       <span className="text-cyan-400 tracking-tight">SUELDO</span>
-      <span className={`font-extrabold not-italic ${sizes[size].ya} text-yellow-400 ml-0.5`}>
-        YA
+      <span className={`font-black not-italic ${sizes[size].yp} text-yellow-400 ml-0.5 drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]`}>
+        ⚡
       </span>
-      <span className={`font-black not-italic ${sizes[size].yp} text-yellow-300 ml-0.5 drop-shadow-[0_0_8px_rgba(250,204,21,0.7)]`}>
-        ý
+      <span className={`font-extrabold not-italic ${sizes[size].ya} text-yellow-400 ml-0`}>
+        A
       </span>
     </span>
   );
