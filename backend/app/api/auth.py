@@ -9,7 +9,7 @@ from app.models.user import User
 from app.models.employee import Employee
 from app.schemas.auth import (
     UserCreate, UserLogin, UserRead, TokenResponse,
-    RegisterByDNI, ChangePassword,
+    RegisterByDNI, RegisterSelf, ChangePassword,
 )
 from app.core.security import (
     hash_password,
@@ -92,6 +92,62 @@ async def register_by_dni(data: RegisterByDNI, db: AsyncSession = Depends(get_db
     await db.flush()
 
     return user
+
+
+@router.post("/register-self", response_model=TokenResponse)
+async def register_self(data: RegisterSelf, response: Response, db: AsyncSession = Depends(get_db)):
+    dni_clean = data.dni.replace(".", "").replace(",", "").strip()
+
+    existing_user = await db.execute(select(User).where(User.email == data.email))
+    if existing_user.scalar_one_or_none():
+        raise HTTPException(status_code=400, detail="El email ya está registrado")
+
+    employee_result = await db.execute(
+        select(Employee).where(Employee.dni == dni_clean, Employee.active == True)
+    )
+    employee = employee_result.scalar_one_or_none()
+
+    if employee:
+        if employee.user_id is not None:
+            raise HTTPException(status_code=400, detail="Este DNI ya tiene una cuenta asociada")
+    else:
+        from datetime import date
+        employee = Employee(
+            name=data.name,
+            dni=dni_clean,
+            category=data.category,
+            admission_date=date.today().isoformat(),
+        )
+        db.add(employee)
+        await db.flush()
+        await db.refresh(employee)
+
+    user = User(
+        email=data.email,
+        hashed_password=hash_password(data.password),
+        role="employee",
+    )
+    db.add(user)
+    await db.flush()
+    await db.refresh(user)
+
+    employee.user_id = user.id
+    await db.flush()
+
+    token = create_access_token(data={"sub": str(user.id), "role": user.role})
+    is_prod = not settings.DEBUG and "localhost" not in settings.CORS_ORIGINS[0]
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        httponly=True,
+        secure=is_prod,
+        samesite="none" if is_prod else "lax",
+        max_age=3600,
+    )
+    return TokenResponse(
+        access_token=token,
+        user=UserRead.model_validate(user),
+    )
 
 
 class DNILookupResponse(BaseModel):

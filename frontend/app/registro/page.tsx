@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Logo from "../../components/Logo";
-import { api } from "../../lib/api";
+import { api, setAuthToken } from "../../lib/api";
 
 export default function RegistroPage() {
   const [step, setStep] = useState<1 | 2>(1);
@@ -15,6 +15,9 @@ export default function RegistroPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [isNewEmployee, setIsNewEmployee] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newCategory, setNewCategory] = useState("");
 
   const handleSearchDNI = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,17 +47,18 @@ export default function RegistroPage() {
     setLoading(true);
     try {
       const result = await api.auth.lookupDNI(dni);
-      if (!result.found) {
-        setError("No se encontró un empleado activo con ese DNI.");
-        setLoading(false);
-        return;
-      }
-      if (result.has_account) {
+      if (result.found && result.has_account) {
         setError("Este empleado ya tiene una cuenta asociada. Iniciá sesión normalmente.");
         setLoading(false);
         return;
       }
-      setEmployeeName(result.name!);
+      if (result.found) {
+        setEmployeeName(result.name!);
+        setIsNewEmployee(false);
+      } else {
+        setEmployeeName("");
+        setIsNewEmployee(true);
+      }
       setStep(2);
     } catch {
       setError("Error al buscar empleado.");
@@ -77,7 +81,22 @@ export default function RegistroPage() {
 
     setLoading(true);
     try {
-      await api.auth.registerByDNI(dni, email, password);
+      if (isNewEmployee) {
+        if (!newName.trim()) {
+          setError("Ingresá tu nombre completo.");
+          setLoading(false);
+          return;
+        }
+        if (!newCategory) {
+          setError("Seleccioná una categoría.");
+          setLoading(false);
+          return;
+        }
+        const res = await api.auth.registerSelf(newName, dni, newCategory, email, password);
+        setAuthToken(res.access_token);
+      } else {
+        await api.auth.registerByDNI(dni, email, password);
+      }
       setSuccess(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al crear la cuenta");
@@ -92,14 +111,25 @@ export default function RegistroPage() {
           <div className="text-5xl mb-4">✅</div>
           <h1 className="text-2xl font-bold text-green-700 mb-2">Cuenta creada</h1>
           <p className="text-gray-600 mb-6">
-            Tu cuenta fue creada exitosamente. Ya podés iniciar sesión.
+            {isNewEmployee
+              ? "Tu cuenta y ficha de empleado fueron creadas. Ya podés cargar tus horas."
+              : "Tu cuenta fue creada exitosamente. Ya podés iniciar sesión."}
           </p>
-          <Link
-            href="/login"
-            className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-          >
-            Ir a Iniciar Sesión
-          </Link>
+          {isNewEmployee ? (
+            <Link
+              href="/fichadas"
+              className="inline-block px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+            >
+              Ir a cargar mis horas
+            </Link>
+          ) : (
+            <Link
+              href="/login"
+              className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            >
+              Ir a Iniciar Sesión
+            </Link>
+          )}
         </div>
       </div>
     );
@@ -140,9 +170,50 @@ export default function RegistroPage() {
           </form>
         ) : (
           <form onSubmit={handleRegister} className="space-y-4">
-            <div className="bg-blue-50 text-blue-700 px-4 py-3 rounded-lg text-sm">
-              Empleado encontrado: <strong>{employeeName}</strong>
-            </div>
+            {isNewEmployee ? (
+              <div className="bg-yellow-50 text-yellow-700 px-4 py-3 rounded-lg text-sm">
+                No encontramos tu DNI. Completá tus datos para crear tu ficha.
+              </div>
+            ) : (
+              <div className="bg-blue-50 text-blue-700 px-4 py-3 rounded-lg text-sm">
+                Empleado encontrado: <strong>{employeeName}</strong>
+              </div>
+            )}
+            {isNewEmployee && (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nombre completo</label>
+                  <input
+                    type="text"
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    placeholder="Tu nombre y apellido"
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
+                  <select
+                    value={newCategory}
+                    onChange={(e) => setNewCategory(e.target.value)}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Seleccionar categoría</option>
+                    <option value="Vigilador General">Vigilador General</option>
+                    <option value="Vigilador Bombero">Vigilador Bombero</option>
+                    <option value="Administrativo">Administrativo</option>
+                    <option value="Vigilador Principal">Vigilador Principal</option>
+                    <option value="Verificación de Eventos">Verificación de Eventos</option>
+                    <option value="Operador de Monitoreo">Operador de Monitoreo</option>
+                    <option value="Guía Técnico">Guía Técnico</option>
+                    <option value="Instalador Sist. Electrónicos">Instalador Sist. Electrónicos</option>
+                    <option value="Controlador de Admisión y Permanencia General">Controlador de Admisión y Permanencia General</option>
+                  </select>
+                </div>
+              </>
+            )}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
               <input
@@ -185,7 +256,7 @@ export default function RegistroPage() {
             </button>
             <button
               type="button"
-              onClick={() => { setStep(1); setEmployeeName(""); setError(""); }}
+              onClick={() => { setStep(1); setEmployeeName(""); setIsNewEmployee(false); setError(""); setNewName(""); setNewCategory(""); }}
               className="w-full py-2 text-gray-500 hover:text-gray-700 text-sm"
             >
               ← Volver

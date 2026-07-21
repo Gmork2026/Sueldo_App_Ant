@@ -43,3 +43,11 @@ class RegisterByDNI(BaseModel):
 class ChangePassword(BaseModel):
     current_password: str
     new_password: str
+
+
+class RegisterSelf(BaseModel):
+    name: str
+    dni: str
+    category: str
+    email: EmailStr
+    password: str
