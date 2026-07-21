@@ -21,7 +21,7 @@ const MONTH_NAMES = [
 ];
 
 export default function FichadasPage() {
-  const { isAdmin } = useAuth();
+  const { isAdmin, user } = useAuth();
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [selectedEmp, setSelectedEmp] = useState<number | null>(null);
   const [month, setMonth] = useState(new Date().getMonth() + 1);
@@ -40,9 +40,13 @@ export default function FichadasPage() {
 
   useEffect(() => {
     api.employees.list().then((data) => {
-      setEmployees(data.filter((e) => e.active));
+      const active = data.filter((e) => e.active);
+      setEmployees(active);
+      if (!isAdmin && active.length === 1) {
+        setSelectedEmp(active[0].id);
+      }
     });
-  }, []);
+  }, [isAdmin]);
 
   const loadRecords = async () => {
     if (!selectedEmp) return;
@@ -147,16 +151,20 @@ export default function FichadasPage() {
       <h1 className="text-2xl font-bold mb-6">Fichadas</h1>
 
       <div className="flex gap-4 mb-6 flex-wrap">
-        <select
-          value={selectedEmp || ""}
-          onChange={(e) => setSelectedEmp(Number(e.target.value))}
-          className="px-3 py-2 border rounded-lg text-sm"
-        >
-          <option value="">Seleccionar empleado</option>
-          {employees.map((emp) => (
-            <option key={emp.id} value={emp.id}>{emp.name}</option>
-          ))}
-        </select>
+        {isAdmin ? (
+          <select
+            value={selectedEmp || ""}
+            onChange={(e) => setSelectedEmp(Number(e.target.value))}
+            className="px-3 py-2 border rounded-lg text-sm"
+          >
+            <option value="">Seleccionar empleado</option>
+            {employees.map((emp) => (
+              <option key={emp.id} value={emp.id}>{emp.name}</option>
+            ))}
+          </select>
+        ) : employees.length === 1 ? (
+          <div className="px-3 py-2 bg-gray-100 rounded-lg text-sm font-medium">{employees[0]?.name}</div>
+        ) : null}
 
         <select value={month} onChange={(e) => setMonth(Number(e.target.value))} className="px-3 py-2 border rounded-lg text-sm">
           {MONTH_NAMES.map((name, i) => (

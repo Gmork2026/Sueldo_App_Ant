@@ -6,6 +6,18 @@ import { api } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
 import type { Employee } from "../../lib/types";
 
+const CATEGORIES = [
+  "Vigilador General",
+  "Vigilador Bombero",
+  "Administrativo",
+  "Vigilador Principal",
+  "Verificación de Eventos",
+  "Operador de Monitoreo",
+  "Guía Técnico",
+  "Instalador Sist. Electrónicos",
+  "Controlador de Admisión y Permanencia General",
+];
+
 export default function EmpleadosPage() {
   const { isAdmin } = useAuth();
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -14,6 +26,11 @@ export default function EmpleadosPage() {
   const [editing, setEditing] = useState<Employee | null>(null);
   const [form, setForm] = useState({ name: "", dni: "", category: "", admission_date: "", legajo: "" });
   const [error, setError] = useState("");
+
+  const [createUser, setCreateUser] = useState(false);
+  const [userForm, setUserForm] = useState({ email: "", password: "" });
+  const [showLinkAccount, setShowLinkAccount] = useState<number | null>(null);
+  const [linkForm, setLinkForm] = useState({ email: "", password: "" });
 
   const load = async () => {
     try {
@@ -32,11 +49,24 @@ export default function EmpleadosPage() {
       if (editing) {
         await api.employees.update(editing.id, form);
       } else {
-        await api.employees.create(form);
+        const emp = await api.employees.create(form);
+        if (createUser && userForm.email && userForm.password) {
+          try {
+            await api.auth.register(userForm.email, userForm.password, "employee", emp.id);
+          } catch (err) {
+            setError("Empleado creado pero error al crear cuenta: " + (err instanceof Error ? err.message : "Error"));
+            setShowForm(false);
+            setEditing(null);
+            load();
+            return;
+          }
+        }
       }
       setShowForm(false);
       setEditing(null);
       setForm({ name: "", dni: "", category: "", admission_date: "", legajo: "" });
+      setCreateUser(false);
+      setUserForm({ email: "", password: "" });
       load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error");
@@ -46,6 +76,8 @@ export default function EmpleadosPage() {
   const handleEdit = (emp: Employee) => {
     setEditing(emp);
     setForm({ name: emp.name, dni: emp.dni, category: emp.category, admission_date: emp.admission_date, legajo: emp.legajo || "" });
+    setCreateUser(false);
+    setUserForm({ email: "", password: "" });
     setShowForm(true);
   };
 
@@ -55,10 +87,17 @@ export default function EmpleadosPage() {
     load();
   };
 
-  const categories = [
-    "Vigilador", "Cabo", "Sargento", "Suboficial",
-    "Oficial", "Jefe de Seguridad", "Director", "Gerente", "Cajero"
-  ];
+  const handleLinkAccount = async (empId: number) => {
+    setError("");
+    try {
+      await api.auth.register(linkForm.email, linkForm.password, "employee", empId);
+      setShowLinkAccount(null);
+      setLinkForm({ email: "", password: "" });
+      load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al crear cuenta");
+    }
+  };
 
   return (
     <AppLayout>
@@ -66,7 +105,7 @@ export default function EmpleadosPage() {
         <h1 className="text-2xl font-bold">Empleados</h1>
         {isAdmin && (
           <button
-            onClick={() => { setEditing(null); setForm({ name: "", dni: "", category: "", admission_date: "", legajo: "" }); setShowForm(true); }}
+            onClick={() => { setEditing(null); setForm({ name: "", dni: "", category: "", admission_date: "", legajo: "" }); setCreateUser(false); setUserForm({ email: "", password: "" }); setShowForm(true); }}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
           >
             + Nuevo Empleado
@@ -82,10 +121,35 @@ export default function EmpleadosPage() {
             <input placeholder="DNI" value={form.dni} onChange={(e) => setForm({ ...form, dni: e.target.value })} required className="px-3 py-2 border rounded-lg" />
             <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} required className="px-3 py-2 border rounded-lg">
               <option value="">Seleccionar categoría</option>
-              {categories.map((c) => <option key={c} value={c}>{c}</option>)}
+              {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
-            <input type="date" placeholder="Fecha de ingreso" value={form.admission_date} onChange={(e) => setForm({ ...form, admission_date: e.target.value })} required className="px-3 py-2 border rounded-lg" />
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Fecha de Alta</label>
+              <input type="date" value={form.admission_date} onChange={(e) => setForm({ ...form, admission_date: e.target.value })} required className="px-3 py-2 border rounded-lg w-full" />
+            </div>
             <input placeholder="Legajo (opcional)" value={form.legajo} onChange={(e) => setForm({ ...form, legajo: e.target.value })} className="px-3 py-2 border rounded-lg" />
+
+            {!editing && (
+              <div className="md:col-span-2">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={createUser}
+                    onChange={(e) => setCreateUser(e.target.checked)}
+                    className="w-4 h-4 rounded border-gray-300"
+                  />
+                  <span className="text-sm font-medium text-gray-700">Crear cuenta de usuario para este empleado</span>
+                </label>
+              </div>
+            )}
+
+            {createUser && !editing && (
+              <>
+                <input type="email" placeholder="Email del empleado" value={userForm.email} onChange={(e) => setUserForm({ ...userForm, email: e.target.value })} required className="px-3 py-2 border rounded-lg" />
+                <input type="password" placeholder="Contraseña temporal" value={userForm.password} onChange={(e) => setUserForm({ ...userForm, password: e.target.value })} required className="px-3 py-2 border rounded-lg" />
+              </>
+            )}
+
             <div className="flex gap-2 md:col-span-2">
               <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
                 {editing ? "Guardar Cambios" : "Crear Empleado"}
@@ -93,6 +157,21 @@ export default function EmpleadosPage() {
               <button type="button" onClick={() => { setShowForm(false); setEditing(null); }} className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 text-sm">
                 Cancelar
               </button>
+            </div>
+            {error && <div className="text-red-600 text-sm md:col-span-2">{error}</div>}
+          </form>
+        </div>
+      )}
+
+      {showLinkAccount !== null && (
+        <div className="bg-white rounded-xl shadow p-6 mb-6 border">
+          <h2 className="text-lg font-semibold mb-4">Crear cuenta de usuario</h2>
+          <form onSubmit={(e) => { e.preventDefault(); handleLinkAccount(showLinkAccount); }} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input type="email" placeholder="Email del empleado" value={linkForm.email} onChange={(e) => setLinkForm({ ...linkForm, email: e.target.value })} required className="px-3 py-2 border rounded-lg" />
+            <input type="password" placeholder="Contraseña temporal" value={linkForm.password} onChange={(e) => setLinkForm({ ...linkForm, password: e.target.value })} required className="px-3 py-2 border rounded-lg" />
+            <div className="flex gap-2 md:col-span-2">
+              <button type="submit" className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm">Crear Cuenta</button>
+              <button type="button" onClick={() => { setShowLinkAccount(null); setLinkForm({ email: "", password: "" }); }} className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 text-sm">Cancelar</button>
             </div>
             {error && <div className="text-red-600 text-sm md:col-span-2">{error}</div>}
           </form>
@@ -115,8 +194,8 @@ export default function EmpleadosPage() {
                 <th className="text-left px-4 py-3 font-medium">DNI</th>
                 <th className="text-left px-4 py-3 font-medium">Categoría</th>
                 <th className="text-left px-4 py-3 font-medium">Legajo</th>
-                <th className="text-left px-4 py-3 font-medium">Ingreso</th>
-                <th className="text-left px-4 py-3 font-medium">Estado</th>
+                <th className="text-left px-4 py-3 font-medium">Fecha Alta</th>
+                <th className="text-left px-4 py-3 font-medium">Cuenta</th>
                 {isAdmin && <th className="text-right px-4 py-3 font-medium">Acciones</th>}
               </tr>
             </thead>
@@ -129,13 +208,18 @@ export default function EmpleadosPage() {
                   <td className="px-4 py-3">{emp.legajo || "-"}</td>
                   <td className="px-4 py-3">{emp.admission_date}</td>
                   <td className="px-4 py-3">
-                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${emp.active ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
-                      {emp.active ? "Activo" : "Inactivo"}
-                    </span>
+                    {emp.user_id ? (
+                      <span className="px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700">Con cuenta</span>
+                    ) : (
+                      <span className="px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-700">Sin cuenta</span>
+                    )}
                   </td>
                   {isAdmin && (
                     <td className="px-4 py-3 text-right space-x-2">
                       <button onClick={() => handleEdit(emp)} className="text-blue-600 hover:underline text-xs">Editar</button>
+                      {!emp.user_id && (
+                        <button onClick={() => { setShowLinkAccount(emp.id); setLinkForm({ email: "", password: "" }); }} className="text-green-600 hover:underline text-xs">Crear cuenta</button>
+                      )}
                       <button onClick={() => handleDelete(emp.id)} className="text-red-600 hover:underline text-xs">Desactivar</button>
                     </td>
                   )}

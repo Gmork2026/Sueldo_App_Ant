@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import AppLayout from "../../components/AppLayout";
 import { api } from "../../lib/api";
+import { useAuth } from "../../lib/auth";
 
 interface User {
   id: number;
@@ -12,12 +14,20 @@ interface User {
 }
 
 export default function UsuariosPage() {
+  const { isSuperAdmin } = useAuth();
+  const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<User | null>(null);
   const [form, setForm] = useState({ email: "", password: "", role: "employee" });
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!loading && !isSuperAdmin) {
+      router.push("/empleados");
+    }
+  }, [isSuperAdmin, loading, router]);
 
   const load = async () => {
     try {
@@ -71,6 +81,16 @@ export default function UsuariosPage() {
       alert(err instanceof Error ? err.message : "Error al eliminar");
     }
   };
+
+  const roleBadge = (role: string) => {
+    if (role === "superadmin") return <span className="px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-700">Super Admin</span>;
+    if (role === "admin") return <span className="px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700">Admin</span>;
+    return <span className="px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">Empleado</span>;
+  };
+
+  if (!isSuperAdmin && !loading) {
+    return null;
+  }
 
   return (
     <AppLayout>
@@ -129,7 +149,7 @@ export default function UsuariosPage() {
         <div className="text-gray-500">Cargando usuarios...</div>
       ) : users.length === 0 ? (
         <div className="text-center py-12 text-gray-400">
-          No hay usuarios. Usá <code className="bg-gray-100 px-1 rounded">POST /api/auth/seed</code> para crear el primer admin.
+          No hay usuarios. Usá <code className="bg-gray-100 px-1 rounded">POST /api/auth/seed</code> para crear el primer superadmin.
         </div>
       ) : (
         <div className="bg-white rounded-xl shadow border overflow-hidden">
@@ -146,11 +166,7 @@ export default function UsuariosPage() {
               {users.map((u) => (
                 <tr key={u.id} className="border-b hover:bg-gray-50">
                   <td className="px-4 py-3 font-medium">{u.email}</td>
-                  <td className="px-4 py-3">
-                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${u.role === "admin" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-700"}`}>
-                      {u.role === "admin" ? "Admin" : "Empleado"}
-                    </span>
-                  </td>
+                  <td className="px-4 py-3">{roleBadge(u.role)}</td>
                   <td className="px-4 py-3 text-gray-500">{new Date(u.created_at).toLocaleDateString("es-AR")}</td>
                   <td className="px-4 py-3 text-right space-x-2">
                     <button onClick={() => handleEdit(u)} className="text-blue-600 hover:underline text-xs">Editar</button>

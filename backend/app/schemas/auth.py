@@ -11,6 +11,7 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
     role: str = "employee"
+    employee_id: int | None = None
 
 
 class UserLogin(BaseModel):
@@ -31,3 +32,14 @@ class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
     user: UserRead
+
+
+class RegisterByDNI(BaseModel):
+    dni: str
+    email: EmailStr
+    password: str
+
+
+class ChangePassword(BaseModel):
+    current_password: str
+    new_password: str

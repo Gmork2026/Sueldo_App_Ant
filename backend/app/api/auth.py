@@ -6,14 +6,18 @@ from sqlalchemy import select, func
 from app.core.config import get_settings
 from app.database import get_db
 from app.models.user import User
-from app.schemas.auth import UserCreate, UserLogin, UserRead, TokenResponse
+from app.models.employee import Employee
+from app.schemas.auth import (
+    UserCreate, UserLogin, UserRead, TokenResponse,
+    RegisterByDNI, ChangePassword,
+)
 from app.core.security import (
     hash_password,
     verify_password,
     create_access_token,
     get_current_user,
 )
-from app.core.deps import AdminUser, CurrentUser
+from app.core.deps import AdminUser, SuperAdminUser, CurrentUser
 
 settings = get_settings()
 router = APIRouter(prefix="/api/auth", tags=["auth"])
@@ -21,6 +25,14 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 @router.post("/register", response_model=UserRead)
 async def register(data: UserCreate, admin: AdminUser, db: AsyncSession = Depends(get_db)):
+    if data.employee_id and admin.role != "superadmin":
+        emp_result = await db.execute(select(Employee).where(Employee.id == data.employee_id))
+        emp = emp_result.scalar_one_or_none()
+        if not emp:
+            raise HTTPException(status_code=404, detail="Empleado no encontrado")
+        if emp.user_id is not None:
+            raise HTTPException(status_code=400, detail="Este empleado ya tiene una cuenta de usuario")
+
     existing = await db.execute(select(User).where(User.email == data.email))
     if existing.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="El email ya está registrado")
@@ -33,6 +45,46 @@ async def register(data: UserCreate, admin: AdminUser, db: AsyncSession = Depend
     db.add(user)
     await db.flush()
     await db.refresh(user)
+
+    if data.employee_id:
+        emp_result = await db.execute(select(Employee).where(Employee.id == data.employee_id))
+        emp = emp_result.scalar_one_or_none()
+        if emp:
+            emp.user_id = user.id
+            await db.flush()
+
+    return user
+
+
+@router.post("/register-by-dni", response_model=UserRead)
+async def register_by_dni(data: RegisterByDNI, db: AsyncSession = Depends(get_db)):
+    dni_clean = data.dni.replace(".", "").replace(",", "").strip()
+    result = await db.execute(
+        select(Employee).where(Employee.dni == dni_clean, Employee.active == True)
+    )
+    employee = result.scalar_one_or_none()
+    if not employee:
+        raise HTTPException(status_code=404, detail="No se encontró un empleado activo con ese DNI")
+
+    if employee.user_id is not None:
+        raise HTTPException(status_code=400, detail="Este empleado ya tiene una cuenta de usuario asociada")
+
+    existing_user = await db.execute(select(User).where(User.email == data.email))
+    if existing_user.scalar_one_or_none():
+        raise HTTPException(status_code=400, detail="El email ya está registrado")
+
+    user = User(
+        email=data.email,
+        hashed_password=hash_password(data.password),
+        role="employee",
+    )
+    db.add(user)
+    await db.flush()
+    await db.refresh(user)
+
+    employee.user_id = user.id
+    await db.flush()
+
     return user
 
 
@@ -65,6 +117,20 @@ async def get_me(user=Depends(get_current_user)):
     return user
 
 
+@router.put("/change-password")
+async def change_password(
+    data: ChangePassword,
+    user: CurrentUser,
+    db: AsyncSession = Depends(get_db),
+):
+    if not verify_password(data.current_password, user.hashed_password):
+        raise HTTPException(status_code=400, detail="La contraseña actual es incorrecta")
+
+    user.hashed_password = hash_password(data.new_password)
+    await db.flush()
+    return {"ok": True, "message": "Contraseña actualizada"}
+
+
 @router.post("/logout")
 async def logout(response: Response):
     response.delete_cookie("access_token")
@@ -92,20 +158,20 @@ async def seed_admin(data: SeedRequest, db: AsyncSession = Depends(get_db)):
     user = User(
         email=data.email,
         hashed_password=hash_password(data.password),
-        role="admin",
+        role="superadmin",
     )
     db.add(user)
     await db.flush()
     await db.refresh(user)
     return SeedResponse(
-        message="Admin creado exitosamente",
+        message="Superadmin creado exitosamente",
         email=data.email,
         password=data.password,
     )
 
 
 @router.get("/users", response_model=list[UserRead])
-async def list_users(admin: AdminUser, db: AsyncSession = Depends(get_db)):
+async def list_users(admin: SuperAdminUser, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(User).order_by(User.id))
     return result.scalars().all()
 
@@ -120,15 +186,15 @@ class UserUpdate(BaseModel):
 async def update_user(
     user_id: int,
     data: UserUpdate,
-    admin: AdminUser,
+    admin: SuperAdminUser,
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one_or_none()
     if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
-    if user.id == admin.id and data.role and data.role != "admin":
-        raise HTTPException(status_code=400, detail="No podés quitarte tu propio rol de admin")
+    if user.id == admin.id and data.role and data.role != "superadmin":
+        raise HTTPException(status_code=400, detail="No podés quitarte tu propio rol de superadmin")
 
     if data.email is not None:
         existing = await db.execute(select(User).where(User.email == data.email, User.id != user_id))
@@ -148,7 +214,7 @@ async def update_user(
 @router.delete("/users/{user_id}")
 async def delete_user(
     user_id: int,
-    admin: AdminUser,
+    admin: SuperAdminUser,
     db: AsyncSession = Depends(get_db),
 ):
     if user_id == admin.id:

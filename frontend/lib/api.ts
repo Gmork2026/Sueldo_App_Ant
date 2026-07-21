@@ -49,10 +49,20 @@ export const api = {
       ),
     me: () => request<{ id: number; email: string; role: string; created_at: string }>("/api/auth/me"),
     logout: () => request<{ ok: boolean }>("/api/auth/logout", { method: "POST" }),
-    register: (email: string, password: string, role = "employee") =>
+    register: (email: string, password: string, role = "employee", employeeId?: number) =>
       request<{ id: number; email: string; role: string }>(
         "/api/auth/register",
-        { method: "POST", body: JSON.stringify({ email, password, role }) }
+        { method: "POST", body: JSON.stringify({ email, password, role, employee_id: employeeId }) }
+      ),
+    registerByDNI: (dni: string, email: string, password: string) =>
+      request<{ id: number; email: string; role: string }>(
+        "/api/auth/register-by-dni",
+        { method: "POST", body: JSON.stringify({ dni, email, password }) }
+      ),
+    changePassword: (currentPassword: string, newPassword: string) =>
+      request<{ ok: boolean; message: string }>(
+        "/api/auth/change-password",
+        { method: "PUT", body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }) }
       ),
     seed: (email: string, password: string) =>
       request<{ message: string; email: string; password: string }>(

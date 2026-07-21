@@ -5,17 +5,27 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "../lib/auth";
 import Logo from "./Logo";
 
-const navItems = [
-  { href: "/empleados", label: "Empleados", icon: "👥" },
-  { href: "/fichadas", label: "Fichadas", icon: "📋" },
-  { href: "/liquidaciones", label: "Liquidaciones", icon: "💰" },
-  { href: "/importar", label: "Importar Excel", icon: "📥", adminOnly: true },
-  { href: "/usuarios", label: "Usuarios", icon: "🔑", adminOnly: true },
-];
-
 export default function Sidebar() {
   const pathname = usePathname();
-  const { user, logout, isAdmin } = useAuth();
+  const { user, logout, isAdmin, isSuperAdmin, isEmployee } = useAuth();
+
+  const navItems = [
+    ...(!isEmployee ? [
+      { href: "/empleados", label: "Empleados", icon: "👥" },
+    ] : []),
+    { href: "/fichadas", label: "Fichadas", icon: "📋" },
+    ...(!isEmployee ? [
+      { href: "/liquidaciones", label: "Liquidaciones", icon: "💰" },
+      { href: "/importar", label: "Importar Excel", icon: "📥" },
+    ] : []),
+    ...(isSuperAdmin ? [
+      { href: "/usuarios", label: "Usuarios", icon: "🔑" },
+    ] : []),
+    { href: "/perfil", label: "Mi Perfil", icon: "⚙️" },
+  ];
+
+  const roleLabel = isSuperAdmin ? "Super Admin" : isAdmin ? "Admin" : "Empleado";
+  const roleColor = isSuperAdmin ? "bg-purple-600" : isAdmin ? "bg-blue-600" : "bg-white/20";
 
   return (
     <aside className="w-64 bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] flex flex-col min-h-screen">
@@ -25,32 +35,30 @@ export default function Sidebar() {
       </div>
 
       <nav className="flex-1 p-3 space-y-1">
-        {navItems
-          .filter((item) => !item.adminOnly || isAdmin)
-          .map((item) => {
-            const active = pathname.startsWith(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-                  active
-                    ? "bg-[var(--sidebar-active)] text-white"
-                    : "hover:bg-white/10 hover:text-white"
-                }`}
-              >
-                <span>{item.icon}</span>
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
+        {navItems.map((item) => {
+          const active = pathname.startsWith(item.href);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+                active
+                  ? "bg-[var(--sidebar-active)] text-white"
+                  : "hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              <span>{item.icon}</span>
+              <span>{item.label}</span>
+            </Link>
+          );
+        })}
       </nav>
 
       <div className="p-3 border-t border-white/10">
         <div className="px-3 py-2 text-xs opacity-70 truncate">{user?.email}</div>
         <div className="px-3 py-1 text-xs">
-          <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${isAdmin ? "bg-blue-600 text-white" : "bg-white/20 text-white"}`}>
-            {isAdmin ? "Admin" : "Empleado"}
+          <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium text-white ${roleColor}`}>
+            {roleLabel}
           </span>
         </div>
         <button

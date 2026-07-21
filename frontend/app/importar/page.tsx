@@ -48,7 +48,10 @@ export default function ImportarPage() {
       <div className="bg-white rounded-xl shadow p-6 border max-w-2xl">
         <p className="text-sm text-gray-600 mb-4">
           Subí un archivo Excel (.xlsx) con los datos de los empleados.
-          El archivo debe tener columnas como: <strong>Nombre, DNI, Categoría, Fecha de Ingreso, Legajo</strong>.
+          El sistema reconoce estas columnas: <strong>VIGILADOR</strong> (nombre), <strong>DNI</strong>, <strong>CATEGORIA</strong>, <strong>F. ALTA</strong> (fecha de alta en la empresa), <strong>MES ALTA</strong>, <strong>LEG</strong> (legajo), <strong>MAIL</strong>.
+        </p>
+        <p className="text-xs text-gray-400 mb-4">
+          Nota: &quot;Fecha de Alta&quot; es la fecha en que el empleado ingresó a la empresa, no es un horario ni día de semana.
         </p>
 
         <div className="mb-4">

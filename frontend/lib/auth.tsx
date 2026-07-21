@@ -16,6 +16,8 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   isAdmin: boolean;
+  isSuperAdmin: boolean;
+  isEmployee: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -24,6 +26,8 @@ const AuthContext = createContext<AuthContextType>({
   login: async () => {},
   logout: async () => {},
   isAdmin: false,
+  isSuperAdmin: false,
+  isEmployee: false,
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -49,7 +53,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string) => {
     const res = await api.auth.login(email, password);
     setUser(res.user);
-    router.push("/empleados");
+    if (res.user.role === "employee") {
+      router.push("/fichadas");
+    } else {
+      router.push("/empleados");
+    }
   };
 
   const logout = async () => {
@@ -58,8 +66,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     router.push("/login");
   };
 
+  const isAdmin = user?.role === "admin" || user?.role === "superadmin";
+  const isSuperAdmin = user?.role === "superadmin";
+  const isEmployee = user?.role === "employee";
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, isAdmin: user?.role === "admin" }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, isAdmin, isSuperAdmin, isEmployee }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useAuth } from "../../lib/auth";
 import Logo from "../../components/Logo";
 
@@ -71,6 +72,13 @@ export default function LoginPage() {
             {loading ? "Ingresando..." : "Iniciar Sesión"}
           </button>
         </form>
+
+        <div className="mt-6 text-center text-sm text-gray-500">
+          ¿No tenés cuenta?{" "}
+          <Link href="/registro" className="text-blue-600 hover:underline font-medium">
+            Registrate acá
+          </Link>
+        </div>
       </div>
     </div>
   );
