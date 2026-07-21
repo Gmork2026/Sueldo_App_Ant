@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from sqlalchemy import String, Boolean, ForeignKey, Text, Date, Time, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -21,7 +21,7 @@ class TimesheetRecord(Base):
     holiday_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
-        default=lambda: datetime.now(timezone.utc)
+        default=lambda: datetime.utcnow()
     )
 
     employee = relationship("Employee", back_populates="timesheet_records")

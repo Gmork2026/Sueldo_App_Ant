@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from sqlalchemy import String, Boolean, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -19,7 +19,7 @@ class Employee(Base):
     admission_date: Mapped[str] = mapped_column(String(10))
     active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(
-        default=lambda: datetime.now(timezone.utc)
+        default=lambda: datetime.utcnow()
     )
 
     timesheet_records = relationship("TimesheetRecord", back_populates="employee")

@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from sqlalchemy import String, ForeignKey, Numeric, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -37,7 +37,7 @@ class Payroll(Base):
     sac_neto: Mapped[float] = mapped_column(Numeric(10, 2), default=0)
 
     calculated_at: Mapped[datetime] = mapped_column(
-        default=lambda: datetime.now(timezone.utc)
+        default=lambda: datetime.utcnow()
     )
 
     employee = relationship("Employee", back_populates="payrolls")
