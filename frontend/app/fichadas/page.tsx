@@ -24,6 +24,52 @@ function dateStr(year: number, month: number, day: number) {
   return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
+function timeToMinutes(t: string): number {
+  const [h, m] = t.split(":").map(Number);
+  return h * 60 + m;
+}
+
+const DIURNA_START = 360;  // 06:00
+const DIURNA_END = 1260;   // 21:00
+const REGULAR_HOURS_PER_DAY = 8;
+
+function calcShiftHours(entry: string, exit: string) {
+  const start = timeToMinutes(entry);
+  let end = timeToMinutes(exit);
+  if (end <= start) end += 24 * 60;
+
+  const totalMinutes = end - start;
+  const totalHours = totalMinutes / 60;
+
+  let diurnasMin = 0;
+  let nocturnasMin = 0;
+  let cursor = start;
+
+  while (cursor < end) {
+    const nextBoundary =
+      cursor % (24 * 60) < DIURNA_START
+        ? Math.min(end, cursor + (DIURNA_START - (cursor % (24 * 60))))
+        : cursor % (24 * 60) < DIURNA_END
+          ? Math.min(end, cursor + (DIURNA_END - (cursor % (24 * 60))))
+          : Math.min(end, cursor + (24 * 60 - (cursor % (24 * 60))));
+
+    const periodStart = cursor % (24 * 60);
+    if (periodStart >= DIURNA_START && periodStart < DIURNA_END) {
+      diurnasMin += nextBoundary - cursor;
+    } else {
+      nocturnasMin += nextBoundary - cursor;
+    }
+    cursor = nextBoundary;
+  }
+
+  return {
+    total: totalHours,
+    diurnas: diurnasMin / 60,
+    nocturnas: nocturnasMin / 60,
+    extras: Math.max(0, totalHours - REGULAR_HOURS_PER_DAY),
+  };
+}
+
 export default function FichadasPage() {
   const { isAdmin, user } = useAuth();
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -103,6 +149,35 @@ export default function FichadasPage() {
     () => records.filter((r) => r.is_franco).length,
     [records]
   );
+
+  const totalHolidaysWorked = useMemo(
+    () => records.filter((r) => r.is_holiday && !r.is_franco && r.total_hours > 0).length,
+    [records]
+  );
+
+  const totalDiurnas = useMemo(() => {
+    return records.reduce((sum, r) => {
+      if (r.is_franco || !r.entry_time || !r.exit_time) return sum;
+      const { diurnas } = calcShiftHours(r.entry_time, r.exit_time);
+      return sum + diurnas;
+    }, 0);
+  }, [records]);
+
+  const totalNocturnas = useMemo(() => {
+    return records.reduce((sum, r) => {
+      if (r.is_franco || !r.entry_time || !r.exit_time) return sum;
+      const { nocturnas } = calcShiftHours(r.entry_time, r.exit_time);
+      return sum + nocturnas;
+    }, 0);
+  }, [records]);
+
+  const totalExtras = useMemo(() => {
+    return records.reduce((sum, r) => {
+      if (r.is_franco || !r.entry_time || !r.exit_time) return sum;
+      const { extras } = calcShiftHours(r.entry_time, r.exit_time);
+      return sum + extras;
+    }, 0);
+  }, [records]);
 
   const toggleMultiSelectMode = useCallback(() => {
     setMultiSelectMode((prev) => {
@@ -321,18 +396,34 @@ export default function FichadasPage() {
       </div>
 
       {selectedEmp && (
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="bg-card dark:bg-gray-800 rounded-xl shadow p-4 border border-border dark:border-gray-700 text-center">
-            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{totalHours.toFixed(1)}</div>
-            <div className="text-xs text-muted dark:text-gray-400">Horas totales</div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 mb-6">
+          <div className="bg-card dark:bg-gray-800 rounded-xl shadow p-3 border border-border dark:border-gray-700 text-center">
+            <div className="text-xl font-bold text-blue-600 dark:text-blue-400">{totalHours.toFixed(1)}</div>
+            <div className="text-[10px] text-muted dark:text-gray-400">Horas totales</div>
           </div>
-          <div className="bg-card dark:bg-gray-800 rounded-xl shadow p-4 border border-border dark:border-gray-700 text-center">
-            <div className="text-2xl font-bold text-green-600 dark:text-green-400">{totalWorkDays}</div>
-            <div className="text-xs text-muted dark:text-gray-400">Días trabajados</div>
+          <div className="bg-card dark:bg-gray-800 rounded-xl shadow p-3 border border-border dark:border-gray-700 text-center">
+            <div className="text-xl font-bold text-green-600 dark:text-green-400">{totalWorkDays}</div>
+            <div className="text-[10px] text-muted dark:text-gray-400">Días trabajados</div>
           </div>
-          <div className="bg-card dark:bg-gray-800 rounded-xl shadow p-4 border border-border dark:border-gray-700 text-center">
-            <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{totalFrancos}</div>
-            <div className="text-xs text-muted dark:text-gray-400">Francos</div>
+          <div className="bg-card dark:bg-gray-800 rounded-xl shadow p-3 border border-border dark:border-gray-700 text-center">
+            <div className="text-xl font-bold text-purple-600 dark:text-purple-400">{totalFrancos}</div>
+            <div className="text-[10px] text-muted dark:text-gray-400">Francos</div>
+          </div>
+          <div className="bg-card dark:bg-gray-800 rounded-xl shadow p-3 border border-border dark:border-gray-700 text-center">
+            <div className="text-xl font-bold text-orange-600 dark:text-orange-400">{totalHolidaysWorked}</div>
+            <div className="text-[10px] text-muted dark:text-gray-400">Feriados trabajados</div>
+          </div>
+          <div className="bg-card dark:bg-gray-800 rounded-xl shadow p-3 border border-border dark:border-gray-700 text-center">
+            <div className="text-xl font-bold text-yellow-600 dark:text-yellow-400">{totalDiurnas.toFixed(1)}</div>
+            <div className="text-[10px] text-muted dark:text-gray-400">Horas diurnas</div>
+          </div>
+          <div className="bg-card dark:bg-gray-800 rounded-xl shadow p-3 border border-border dark:border-gray-700 text-center">
+            <div className="text-xl font-bold text-indigo-600 dark:text-indigo-400">{totalNocturnas.toFixed(1)}</div>
+            <div className="text-[10px] text-muted dark:text-gray-400">Horas nocturnas</div>
+          </div>
+          <div className="bg-card dark:bg-gray-800 rounded-xl shadow p-3 border border-border dark:border-gray-700 text-center">
+            <div className="text-xl font-bold text-red-600 dark:text-red-400">{totalExtras.toFixed(1)}</div>
+            <div className="text-[10px] text-muted dark:text-gray-400">Horas extras</div>
           </div>
         </div>
       )}
