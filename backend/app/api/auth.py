@@ -25,7 +25,7 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 @router.post("/register", response_model=UserRead)
 async def register(data: UserCreate, admin: AdminUser, db: AsyncSession = Depends(get_db)):
-    if data.employee_id and admin.role != "superadmin":
+    if data.employee_id:
         emp_result = await db.execute(select(Employee).where(Employee.id == data.employee_id))
         emp = emp_result.scalar_one_or_none()
         if not emp:
@@ -34,7 +34,13 @@ async def register(data: UserCreate, admin: AdminUser, db: AsyncSession = Depend
             raise HTTPException(status_code=400, detail="Este empleado ya tiene una cuenta de usuario")
 
     existing = await db.execute(select(User).where(User.email == data.email))
-    if existing.scalar_one_or_none():
+    existing_user = existing.scalar_one_or_none()
+
+    if existing_user:
+        if data.employee_id:
+            emp.user_id = existing_user.id
+            await db.flush()
+            return existing_user
         raise HTTPException(status_code=400, detail="El email ya está registrado")
 
     user = User(
