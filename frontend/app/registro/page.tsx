@@ -18,6 +18,7 @@ export default function RegistroPage() {
   const [isNewEmployee, setIsNewEmployee] = useState(false);
   const [newName, setNewName] = useState("");
   const [newCategory, setNewCategory] = useState("");
+  const [newLegajo, setNewLegajo] = useState("");
 
   const handleSearchDNI = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,7 +93,12 @@ export default function RegistroPage() {
           setLoading(false);
           return;
         }
-        const res = await api.auth.registerSelf(newName, dni, newCategory, email, password);
+        if (!newLegajo.trim()) {
+          setError("Ingresá tu legajo.");
+          setLoading(false);
+          return;
+        }
+        const res = await api.auth.registerSelf(newName, dni, newCategory, newLegajo, email, password);
         setAuthToken(res.access_token);
       } else {
         await api.auth.registerByDNI(dni, email, password);
@@ -212,6 +218,17 @@ export default function RegistroPage() {
                     <option value="Controlador de Admisión y Permanencia General">Controlador de Admisión y Permanencia General</option>
                   </select>
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Legajo</label>
+                  <input
+                    type="text"
+                    value={newLegajo}
+                    onChange={(e) => setNewLegajo(e.target.value)}
+                    placeholder="Tu número de legajo"
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
               </>
             )}
             <div>
@@ -256,7 +273,7 @@ export default function RegistroPage() {
             </button>
             <button
               type="button"
-              onClick={() => { setStep(1); setEmployeeName(""); setIsNewEmployee(false); setError(""); setNewName(""); setNewCategory(""); }}
+              onClick={() => { setStep(1); setEmployeeName(""); setIsNewEmployee(false); setError(""); setNewName(""); setNewCategory(""); setNewLegajo(""); }}
               className="w-full py-2 text-gray-500 hover:text-gray-700 text-sm"
             >
               ← Volver

@@ -105,10 +105,10 @@ export const api = {
       request<{ found: boolean; name?: string; employee_id?: number; has_account: boolean }>(
         `/api/auth/lookup-dni/${encodeURIComponent(dni)}`
       ),
-    registerSelf: (name: string, dni: string, category: string, email: string, password: string) =>
+    registerSelf: (name: string, dni: string, category: string, legajo: string, email: string, password: string) =>
       request<{ access_token: string; user: { id: number; email: string; role: string } }>(
         "/api/auth/register-self",
-        { method: "POST", body: JSON.stringify({ name, dni, category, email, password }) }
+        { method: "POST", body: JSON.stringify({ name, dni, category, legajo, email, password }) }
       ),
   },
 

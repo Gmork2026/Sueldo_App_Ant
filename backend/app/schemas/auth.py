@@ -49,5 +49,6 @@ class RegisterSelf(BaseModel):
     name: str
     dni: str
     category: str
+    legajo: str
     email: EmailStr
     password: str

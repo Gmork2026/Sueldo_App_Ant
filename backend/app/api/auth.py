@@ -116,6 +116,7 @@ async def register_self(data: RegisterSelf, response: Response, db: AsyncSession
             name=data.name,
             dni=dni_clean,
             category=data.category,
+            legajo=data.legajo,
             admission_date=date.today().isoformat(),
         )
         db.add(employee)
