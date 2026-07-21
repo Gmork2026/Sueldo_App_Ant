@@ -18,6 +18,7 @@ class PayrollRead(BaseModel):
     seniority_years: int
     seniority_amount: float
     presentismo: float
+    has_presentismo: bool
     overtime_hours: float
     overtime_amount: float
     holiday_hours: float
@@ -29,10 +30,20 @@ class PayrollRead(BaseModel):
 
     gross_salary: float
     deductions: float
+    deduccion_porcentaje: float
+    deduccion_os_fija: float
     net_salary: float
 
     sac_bruto: float
     sac_deducciones: float
     sac_neto: float
+
+    base_hours: int
+    total_hours_worked: float
+    dias_vacaciones: int
+    dias_trabajados: int
+    pago_basico_trabajado: float
+    pago_vacaciones: float
+    plus_vacacional: float
 
     model_config = {"from_attributes": True}

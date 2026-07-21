@@ -280,11 +280,15 @@ class SalaryEngine:
         if month in (6, 12):
             sac = self.calculate_sac(category, year, month, admission_date)
 
+        retenciones_porcentaje = remunerative * 0.17
+        plus_vacacional = total_basic - scale["basico"] if dias_vacaciones > 0 else 0.0
+
         return {
             "basic_salary": scale["basico"],
             "seniority_years": seniority_years,
             "seniority_amount": seniority_amount,
             "presentismo": presentismo_amount,
+            "has_presentismo": has_presentismo,
             "overtime_hours": overtime_hours,
             "overtime_amount": overtime_amount,
             "holiday_hours": float(projection["feriados_habiles"]),
@@ -295,8 +299,17 @@ class SalaryEngine:
             "non_remunerative": scale["suma_no_rem"],
             "gross_salary": remunerative,
             "deductions": deductions,
+            "deduccion_porcentaje": retenciones_porcentaje,
+            "deduccion_os_fija": self.os_fija,
             "net_salary": net,
             "sac_bruto": sac["sac_bruto"],
             "sac_deducciones": sac["sac_descuentos"],
             "sac_neto": sac["sac_neto"],
+            "base_hours": base_required,
+            "total_hours_worked": total_hours,
+            "dias_vacaciones": dias_vacaciones,
+            "dias_trabajados": days_worked,
+            "pago_basico_trabajado": basic_worked,
+            "pago_vacaciones": vacation_pay,
+            "plus_vacacional": plus_vacacional,
         }

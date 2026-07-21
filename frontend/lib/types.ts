@@ -38,6 +38,7 @@ export interface Payroll {
   seniority_years: number;
   seniority_amount: number;
   presentismo: number;
+  has_presentismo: boolean;
   overtime_hours: number;
   overtime_amount: number;
   holiday_hours: number;
@@ -48,10 +49,19 @@ export interface Payroll {
   non_remunerative: number;
   gross_salary: number;
   deductions: number;
+  deduccion_porcentaje: number;
+  deduccion_os_fija: number;
   net_salary: number;
   sac_bruto: number;
   sac_deducciones: number;
   sac_neto: number;
+  base_hours: number;
+  total_hours_worked: number;
+  dias_vacaciones: number;
+  dias_trabajados: number;
+  pago_basico_trabajado: number;
+  pago_vacaciones: number;
+  plus_vacacional: number;
   calculated_at: string;
 }
 

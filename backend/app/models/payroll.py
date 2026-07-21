@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import String, ForeignKey, Numeric, Integer
+from sqlalchemy import String, ForeignKey, Numeric, Integer, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -19,6 +19,7 @@ class Payroll(Base):
     seniority_years: Mapped[int] = mapped_column(Integer, default=0)
     seniority_amount: Mapped[float] = mapped_column(Numeric(10, 2), default=0)
     presentismo: Mapped[float] = mapped_column(Numeric(10, 2), default=0)
+    has_presentismo: Mapped[bool] = mapped_column(Boolean, default=True)
     overtime_hours: Mapped[float] = mapped_column(Numeric(4, 2), default=0)
     overtime_amount: Mapped[float] = mapped_column(Numeric(10, 2), default=0)
     holiday_hours: Mapped[float] = mapped_column(Numeric(4, 2), default=0)
@@ -30,11 +31,21 @@ class Payroll(Base):
 
     gross_salary: Mapped[float] = mapped_column(Numeric(10, 2), default=0)
     deductions: Mapped[float] = mapped_column(Numeric(10, 2), default=0)
+    deduccion_porcentaje: Mapped[float] = mapped_column(Numeric(10, 2), default=0)
+    deduccion_os_fija: Mapped[float] = mapped_column(Numeric(10, 2), default=0)
     net_salary: Mapped[float] = mapped_column(Numeric(10, 2), default=0)
 
     sac_bruto: Mapped[float] = mapped_column(Numeric(10, 2), default=0)
     sac_deducciones: Mapped[float] = mapped_column(Numeric(10, 2), default=0)
     sac_neto: Mapped[float] = mapped_column(Numeric(10, 2), default=0)
+
+    base_hours: Mapped[int] = mapped_column(Integer, default=0)
+    total_hours_worked: Mapped[float] = mapped_column(Numeric(8, 2), default=0)
+    dias_vacaciones: Mapped[int] = mapped_column(Integer, default=0)
+    dias_trabajados: Mapped[int] = mapped_column(Integer, default=0)
+    pago_basico_trabajado: Mapped[float] = mapped_column(Numeric(10, 2), default=0)
+    pago_vacaciones: Mapped[float] = mapped_column(Numeric(10, 2), default=0)
+    plus_vacacional: Mapped[float] = mapped_column(Numeric(10, 2), default=0)
 
     calculated_at: Mapped[datetime] = mapped_column(
         default=lambda: datetime.utcnow()
