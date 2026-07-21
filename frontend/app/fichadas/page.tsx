@@ -45,8 +45,12 @@ export default function FichadasPage() {
       if (!isAdmin && active.length === 1) {
         setSelectedEmp(active[0].id);
       }
+      if (isAdmin && user) {
+        const myEmp = active.find((e) => e.user_id === user.id);
+        if (myEmp) setSelectedEmp(myEmp.id);
+      }
     });
-  }, [isAdmin]);
+  }, [isAdmin, user]);
 
   const loadRecords = async () => {
     if (!selectedEmp) return;
