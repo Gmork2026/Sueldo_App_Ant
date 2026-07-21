@@ -31,15 +31,20 @@ function timeToMinutes(t: string): number {
 
 const DIURNA_START = 360;  // 06:00
 const DIURNA_END = 1260;   // 21:00
-const REGULAR_HOURS_PER_DAY = 8;
+
+function getBaseHours(year: number, month: number): number {
+  const days = new Date(year, month, 0).getDate();
+  if (days === 31) return 216;
+  if (days === 30) return 208;
+  return 192;
+}
 
 function calcShiftHours(entry: string, exit: string) {
   const start = timeToMinutes(entry);
   let end = timeToMinutes(exit);
   if (end <= start) end += 24 * 60;
 
-  const totalMinutes = end - start;
-  const totalHours = totalMinutes / 60;
+  const totalHours = (end - start) / 60;
 
   let diurnasMin = 0;
   let nocturnasMin = 0;
@@ -66,7 +71,6 @@ function calcShiftHours(entry: string, exit: string) {
     total: totalHours,
     diurnas: diurnasMin / 60,
     nocturnas: nocturnasMin / 60,
-    extras: Math.max(0, totalHours - REGULAR_HOURS_PER_DAY),
   };
 }
 
@@ -172,12 +176,9 @@ export default function FichadasPage() {
   }, [records]);
 
   const totalExtras = useMemo(() => {
-    return records.reduce((sum, r) => {
-      if (r.is_franco || !r.entry_time || !r.exit_time) return sum;
-      const { extras } = calcShiftHours(r.entry_time, r.exit_time);
-      return sum + extras;
-    }, 0);
-  }, [records]);
+    const base = getBaseHours(year, month);
+    return Math.max(0, totalHours - base);
+  }, [totalHours, year, month]);
 
   const toggleMultiSelectMode = useCallback(() => {
     setMultiSelectMode((prev) => {
