@@ -10,6 +10,7 @@ const navItems = [
   { href: "/fichadas", label: "Fichadas", icon: "📋" },
   { href: "/liquidaciones", label: "Liquidaciones", icon: "💰" },
   { href: "/importar", label: "Importar Excel", icon: "📥", adminOnly: true },
+  { href: "/usuarios", label: "Usuarios", icon: "🔑", adminOnly: true },
 ];
 
 export default function Sidebar() {

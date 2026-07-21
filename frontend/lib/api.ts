@@ -54,6 +54,20 @@ export const api = {
         "/api/auth/register",
         { method: "POST", body: JSON.stringify({ email, password, role }) }
       ),
+    seed: (email: string, password: string) =>
+      request<{ message: string; email: string; password: string }>(
+        "/api/auth/seed",
+        { method: "POST", body: JSON.stringify({ email, password }) }
+      ),
+    listUsers: () =>
+      request<Array<{ id: number; email: string; role: string; created_at: string }>>("/api/auth/users"),
+    updateUser: (userId: number, data: { email?: string; role?: string; password?: string }) =>
+      request<{ id: number; email: string; role: string; created_at: string }>(
+        `/api/auth/users/${userId}`,
+        { method: "PUT", body: JSON.stringify(data) }
+      ),
+    deleteUser: (userId: number) =>
+      request<{ ok: boolean }>(`/api/auth/users/${userId}`, { method: "DELETE" }),
   },
 
   employees: {
