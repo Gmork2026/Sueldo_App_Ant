@@ -43,19 +43,18 @@ export default function RegistroPage() {
     setError("");
     setLoading(true);
     try {
-      const employees = await api.employees.list();
-      const emp = employees.find((e) => e.dni.replace(/\./g, "").replace(/,/g, "") === dni.replace(/\./g, "").replace(/,/g, ""));
-      if (!emp) {
+      const result = await api.auth.lookupDNI(dni);
+      if (!result.found) {
         setError("No se encontró un empleado activo con ese DNI.");
         setLoading(false);
         return;
       }
-      if (emp.user_id) {
+      if (result.has_account) {
         setError("Este empleado ya tiene una cuenta asociada. Iniciá sesión normalmente.");
         setLoading(false);
         return;
       }
-      setEmployeeName(emp.name);
+      setEmployeeName(result.name!);
       setStep(2);
     } catch {
       setError("Error al buscar empleado.");

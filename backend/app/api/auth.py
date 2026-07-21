@@ -94,6 +94,30 @@ async def register_by_dni(data: RegisterByDNI, db: AsyncSession = Depends(get_db
     return user
 
 
+class DNILookupResponse(BaseModel):
+    found: bool
+    name: str | None = None
+    employee_id: int | None = None
+    has_account: bool = False
+
+
+@router.get("/lookup-dni/{dni}", response_model=DNILookupResponse)
+async def lookup_dni(dni: str, db: AsyncSession = Depends(get_db)):
+    dni_clean = dni.replace(".", "").replace(",", "").strip()
+    result = await db.execute(
+        select(Employee).where(Employee.dni == dni_clean, Employee.active == True)
+    )
+    employee = result.scalar_one_or_none()
+    if not employee:
+        return DNILookupResponse(found=False)
+    return DNILookupResponse(
+        found=True,
+        name=employee.name,
+        employee_id=employee.id,
+        has_account=employee.user_id is not None,
+    )
+
+
 @router.post("/login", response_model=TokenResponse)
 async def login(data: UserLogin, response: Response, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(User).where(User.email == data.email))

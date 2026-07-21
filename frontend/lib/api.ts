@@ -101,6 +101,10 @@ export const api = {
       ),
     deleteUser: (userId: number) =>
       request<{ ok: boolean }>(`/api/auth/users/${userId}`, { method: "DELETE" }),
+    lookupDNI: (dni: string) =>
+      request<{ found: boolean; name?: string; employee_id?: number; has_account: boolean }>(
+        `/api/auth/lookup-dni/${encodeURIComponent(dni)}`
+      ),
   },
 
   employees: {
