@@ -2,6 +2,24 @@ import type { Employee, TimesheetRecord, Payroll } from "./types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
+let authToken: string | null = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+export function setAuthToken(token: string) {
+  authToken = token;
+  if (typeof window !== "undefined") localStorage.setItem("token", token);
+}
+
+export function clearAuthToken() {
+  authToken = null;
+  if (typeof window !== "undefined") localStorage.removeItem("token");
+}
+
+function authHeaders(extra?: Record<string, string>): Record<string, string> {
+  const h: Record<string, string> = { ...extra };
+  if (authToken) h["Authorization"] = `Bearer ${authToken}`;
+  return h;
+}
+
 async function request<T>(
   path: string,
   options: RequestInit = {}
@@ -10,6 +28,7 @@ async function request<T>(
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
+      ...authHeaders(),
       ...options.headers,
     },
     ...options,
@@ -29,6 +48,10 @@ async function requestBlob(
 ): Promise<Blob> {
   const res = await fetch(`${API_URL}${path}`, {
     credentials: "include",
+    headers: {
+      ...authHeaders(),
+      ...options.headers as Record<string, string>,
+    },
     ...options,
   });
 
@@ -136,6 +159,7 @@ export const api = {
       const res = await fetch(`${API_URL}/api/import/employees/preview`, {
         method: "POST",
         credentials: "include",
+        headers: authHeaders(),
         body: formData,
       });
       if (!res.ok) {
@@ -150,6 +174,7 @@ export const api = {
       const res = await fetch(`${API_URL}/api/import/employees/execute?skip_errors=true`, {
         method: "POST",
         credentials: "include",
+        headers: authHeaders(),
         body: formData,
       });
       if (!res.ok) {

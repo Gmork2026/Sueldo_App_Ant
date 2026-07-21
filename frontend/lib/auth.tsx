@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { api } from "./api";
+import { api, setAuthToken, clearAuthToken } from "./api";
 
 interface AuthUser {
   id: number;
@@ -52,6 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     const res = await api.auth.login(email, password);
+    setAuthToken(res.access_token);
     setUser(res.user);
     if (res.user.role === "employee") {
       router.push("/fichadas");
@@ -61,6 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
+    clearAuthToken();
     await api.auth.logout();
     setUser(null);
     router.push("/login");
