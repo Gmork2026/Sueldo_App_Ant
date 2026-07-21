@@ -119,34 +119,122 @@ async def export_payroll_excel(
     )
     employee = emp_result.scalar_one()
 
+    from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
+
     wb = Workbook()
     ws = wb.active
     ws.title = "Liquidación"
 
-    ws.append(["Concepto", "Valor"])
-    ws.append(["Empleado", employee.name])
-    ws.append(["Categoría", employee.category])
-    ws.append(["Período", f"{payroll.month:02d}/{payroll.year}"])
-    ws.append([])
-    ws.append(["Básico", float(payroll.basic_salary)])
-    ws.append(["Antigüedad", f"{payroll.seniority_years} años", float(payroll.seniority_amount)])
-    ws.append(["Presentismo", float(payroll.presentismo)])
-    ws.append(["Horas Extras", f"{payroll.overtime_hours} hs", float(payroll.overtime_amount)])
-    ws.append(["Feriados", f"{payroll.holiday_hours} hs", float(payroll.holiday_amount)])
-    ws.append(["Nocturnidad", f"{payroll.night_hours} hs", float(payroll.night_amount)])
-    ws.append([])
-    ws.append(["Viáticos", float(payroll.viaticos)])
-    ws.append(["No Remunerativo", float(payroll.non_remunerative)])
-    ws.append([])
-    ws.append(["BRUTO", float(payroll.gross_salary)])
-    ws.append(["Retenciones", float(payroll.deductions)])
-    ws.append(["NETO A COBRAR", float(payroll.net_salary)])
+    header_font = Font(bold=True, size=12)
+    title_font = Font(bold=True, size=14)
+    money_fmt = '#,##0.00'
+    thin_border = Border(
+        left=Side(style="thin"), right=Side(style="thin"),
+        top=Side(style="thin"), bottom=Side(style="thin"),
+    )
+    header_fill = PatternFill(start_color="1F4E79", end_color="1F4E79", fill_type="solid")
+    header_font_white = Font(bold=True, color="FFFFFF", size=11)
+    green_font = Font(bold=True, color="006100", size=11)
+    red_font = Font(bold=True, color="9C0006", size=11)
+
+    ws.column_dimensions["A"].width = 25
+    ws.column_dimensions["B"].width = 20
+    ws.column_dimensions["C"].width = 18
+
+    ws.merge_cells("A1:C1")
+    ws["A1"] = f"Liquidación de Sueldo"
+    ws["A1"].font = title_font
+    ws["A1"].alignment = Alignment(horizontal="center")
+
+    ws["A3"] = "Empleado:"
+    ws["A3"].font = header_font
+    ws["B3"] = employee.name
+    ws["A4"] = "Categoría:"
+    ws["A4"].font = header_font
+    ws["B4"] = employee.category
+    ws["A5"] = "Período:"
+    ws["A5"].font = header_font
+    ws["B5"] = f"{MONTH_NAMES[payroll.month - 1]} {payroll.year}"
+
+    MONTH_NAMES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+
+    row = 7
+    for col_letter in ["A", "B", "C"]:
+        cell = ws.cell(row=row, column=ord(col_letter) - ord("A") + 1)
+        cell.fill = header_fill
+        cell.font = header_font_white
+        cell.border = thin_border
+    ws.cell(row=row, column=1, value="Concepto")
+    ws.cell(row=row, column=2, value="Detalle")
+    ws.cell(row=row, column=3, value="Importe")
+
+    def add_row(label, detail, amount):
+        nonlocal row
+        row += 1
+        ws.cell(row=row, column=1, value=label).border = thin_border
+        ws.cell(row=row, column=2, value=detail).border = thin_border
+        c = ws.cell(row=row, column=3, value=amount)
+        c.number_format = money_fmt
+        c.border = thin_border
+        c.alignment = Alignment(horizontal="right")
+
+    add_row("Básico", "", float(payroll.basic_salary))
+    add_row("Antigüedad", f"{payroll.seniority_years} años", float(payroll.seniority_amount))
+    add_row("Presentismo", "", float(payroll.presentismo))
+    add_row("Horas Extras", f"{payroll.overtime_hours} hs", float(payroll.overtime_amount))
+    add_row("Feriados", f"{payroll.holiday_hours} días", float(payroll.holiday_amount))
+    add_row("Nocturnidad", f"{payroll.night_hours} hs", float(payroll.night_amount))
+
+    row += 1
+    ws.cell(row=row, column=1, value="").border = thin_border
+    ws.cell(row=row, column=2, value="").border = thin_border
+    ws.cell(row=row, column=3, value="").border = thin_border
+
+    add_row("Viáticos", "", float(payroll.viaticos))
+    add_row("No Remunerativo", "", float(payroll.non_remunerative))
+
+    row += 1
+    for c in range(1, 4):
+        ws.cell(row=row, column=c).border = thin_border
+
+    row += 1
+    ws.cell(row=row, column=1, value="BRUTO").font = Font(bold=True, size=11)
+    ws.cell(row=row, column=1).border = thin_border
+    ws.cell(row=row, column=2).border = thin_border
+    c = ws.cell(row=row, column=3, value=float(payroll.gross_salary))
+    c.font = Font(bold=True, size=11)
+    c.number_format = money_fmt
+    c.border = thin_border
+    c.alignment = Alignment(horizontal="right")
+
+    row += 1
+    ws.cell(row=row, column=1, value="Deducciones").font = red_font
+    ws.cell(row=row, column=1).border = thin_border
+    ws.cell(row=row, column=2).border = thin_border
+    c = ws.cell(row=row, column=3, value=float(payroll.deductions))
+    c.font = red_font
+    c.number_format = money_fmt
+    c.border = thin_border
+    c.alignment = Alignment(horizontal="right")
+
+    row += 1
+    ws.cell(row=row, column=1, value="NETO A COBRAR").font = green_font
+    ws.cell(row=row, column=1).border = thin_border
+    ws.cell(row=row, column=2).border = thin_border
+    c = ws.cell(row=row, column=3, value=float(payroll.net_salary))
+    c.font = green_font
+    c.number_format = money_fmt
+    c.border = thin_border
+    c.alignment = Alignment(horizontal="right")
 
     if payroll.sac_bruto > 0:
-        ws.append([])
-        ws.append(["SAC Bruto", float(payroll.sac_bruto)])
-        ws.append(["SAC Descuentos", float(payroll.sac_deducciones)])
-        ws.append(["SAC Neto", float(payroll.sac_neto)])
+        row += 2
+        ws.cell(row=row, column=1, value="SAC (Aguinaldo)").font = Font(bold=True, size=12)
+        row += 1
+        add_row("SAC Bruto", "", float(payroll.sac_bruto))
+        add_row("SAC Deducciones", "", float(payroll.sac_deducciones))
+        add_row("SAC Neto", "", float(payroll.sac_neto))
 
     buffer = io.BytesIO()
     wb.save(buffer)
