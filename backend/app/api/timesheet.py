@@ -371,9 +371,24 @@ async def export_timesheet_excel(
             if rec.is_franco:
                 ws.cell(row=row, column=6, value="Franco").border = thin_border
                 ws.cell(row=row, column=6).font = Font(color="7030A0", bold=True)
+                ws.cell(row=row, column=7, value=0).border = thin_border
+                ws.cell(row=row, column=8, value=0).border = thin_border
             elif rec.is_holiday:
                 ws.cell(row=row, column=6, value=rec.holiday_name or "Feriado").border = thin_border
                 ws.cell(row=row, column=6).font = Font(color="C55A11", bold=True)
+                if hrs > 0:
+                    total_work_days += 1
+                if hrs > 0 and rec.entry_time and rec.exit_time:
+                    diurnas, nocturnas = _calc_diurnas_nocturnas(rec.entry_time, rec.exit_time)
+                    total_diurnas += diurnas
+                    total_nocturnas += nocturnas
+                    ws.cell(row=row, column=7, value=round(diurnas, 2)).border = thin_border
+                    ws.cell(row=row, column=7).number_format = "0.00"
+                    ws.cell(row=row, column=8, value=round(nocturnas, 2)).border = thin_border
+                    ws.cell(row=row, column=8).number_format = "0.00"
+                else:
+                    ws.cell(row=row, column=7, value=0).border = thin_border
+                    ws.cell(row=row, column=8, value=0).border = thin_border
             elif hrs > 0:
                 ws.cell(row=row, column=6, value="Trabajó").border = thin_border
                 ws.cell(row=row, column=6).font = Font(color="006100")
