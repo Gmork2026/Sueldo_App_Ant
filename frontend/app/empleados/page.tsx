@@ -26,6 +26,7 @@ export default function EmpleadosPage() {
   const [editing, setEditing] = useState<Employee | null>(null);
   const [form, setForm] = useState({ name: "", dni: "", category: "", admission_date: "", legajo: "" });
   const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
 
   const [createUser, setCreateUser] = useState(false);
   const [userForm, setUserForm] = useState({ email: "", password: "", role: "employee" });
@@ -99,6 +100,16 @@ export default function EmpleadosPage() {
     }
   };
 
+  const filteredEmployees = employees.filter((emp) => {
+    if (!search.trim()) return true;
+    const q = search.toLowerCase();
+    return (
+      emp.name.toLowerCase().includes(q) ||
+      (emp.legajo && emp.legajo.toLowerCase().includes(q)) ||
+      emp.dni.toLowerCase().includes(q)
+    );
+  });
+
   return (
     <AppLayout>
       <div className="flex items-center justify-between mb-6">
@@ -112,6 +123,18 @@ export default function EmpleadosPage() {
           </button>
         )}
       </div>
+
+      {!showForm && !showLinkAccount && employees.length > 0 && (
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Buscar por nombre, legajo o DNI..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full max-w-md px-3 py-2 border border-border dark:border-gray-600 rounded-lg bg-input-bg dark:bg-gray-700 dark:text-white text-sm"
+          />
+        </div>
+      )}
 
       {showForm && (
         <div className="bg-card dark:bg-gray-800 rounded-xl shadow p-6 mb-6 border border-border dark:border-gray-700">
@@ -212,7 +235,13 @@ export default function EmpleadosPage() {
               </tr>
             </thead>
             <tbody>
-              {employees.map((emp) => (
+              {filteredEmployees.length === 0 ? (
+                <tr>
+                  <td colSpan={isAdmin ? 7 : 6} className="px-4 py-8 text-center text-gray-400 dark:text-gray-500">
+                    No se encontraron empleados
+                  </td>
+                </tr>
+              ) : filteredEmployees.map((emp) => (
                 <tr key={emp.id} className="border-b border-border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
                   <td className="px-4 py-3 font-medium">{emp.name}</td>
                   <td className="px-4 py-3">{emp.dni}</td>

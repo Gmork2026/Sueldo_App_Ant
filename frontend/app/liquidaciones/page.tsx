@@ -78,7 +78,7 @@ export default function LiquidacionesPage() {
           <div>
             <div className="text-muted dark:text-gray-400 text-xs">Antiguedad</div>
             <div className="font-medium text-cyan-600 dark:text-cyan-400">
-              {p.seniority_years} {p.seniority_years === 1 ? "ano" : "anos"} (+{formatMoney(p.seniority_amount)})
+              {p.seniority_years} {p.seniority_years === 1 ? "año" : "años"} (+{formatMoney(p.seniority_amount)})
             </div>
           </div>
         </div>

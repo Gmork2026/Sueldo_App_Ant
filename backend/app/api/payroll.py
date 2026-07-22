@@ -152,12 +152,12 @@ async def export_payroll_excel(
     ws["A4"] = "Categoría:"
     ws["A4"].font = header_font
     ws["B4"] = employee.category
+    MONTH_NAMES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+
     ws["A5"] = "Período:"
     ws["A5"].font = header_font
     ws["B5"] = f"{MONTH_NAMES[payroll.month - 1]} {payroll.year}"
-
-    MONTH_NAMES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-                   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
 
     row = 7
     for col_letter in ["A", "B", "C"]:
