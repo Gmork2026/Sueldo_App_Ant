@@ -85,6 +85,7 @@ export default function FichadasPage() {
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [bulkFilling, setBulkFilling] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   const [multiSelectMode, setMultiSelectMode] = useState(false);
   const [selectedDays, setSelectedDays] = useState<Set<string>>(new Set());
@@ -348,6 +349,17 @@ export default function FichadasPage() {
     setBulkFilling(false);
   };
 
+  const handleExport = async () => {
+    if (!selectedEmp) return;
+    setExporting(true);
+    try {
+      await api.timesheet.export(selectedEmp, month, year);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Error al exportar");
+    }
+    setExporting(false);
+  };
+
   const calcAutoHours = () => {
     if (!form.entry_time || !form.exit_time) return "";
     const [eh, em] = form.entry_time.split(":").map(Number);
@@ -527,13 +539,23 @@ export default function FichadasPage() {
 
           {loading && <div className="text-center text-gray-400 dark:text-gray-500 text-sm mt-3">Cargando...</div>}
 
-          <div className="flex justify-center mt-3">
+          <div className="flex justify-center mt-3 gap-3">
             <button
               onClick={handleBulkFill}
               disabled={bulkFilling}
               className="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 text-sm font-medium disabled:opacity-50"
             >
               {bulkFilling ? "Rellenando..." : "Rellenar mes (07:00-15:00)"}
+            </button>
+            <button
+              onClick={handleExport}
+              disabled={exporting}
+              className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 text-sm font-medium disabled:opacity-50 flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              {exporting ? "Exportando..." : "Exportar Excel"}
             </button>
           </div>
         </div>

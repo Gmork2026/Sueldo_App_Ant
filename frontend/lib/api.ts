@@ -136,6 +136,15 @@ export const api = {
       request<{ ok: boolean }>(`/api/timesheet/${id}`, { method: "DELETE" }),
     bulk: (data: { employee_id: number; month: number; year: number; entry_time: string; exit_time: string; skip_dates?: string[] }) =>
       request<TimesheetRecord[]>(`/api/timesheet/bulk`, { method: "POST", body: JSON.stringify(data) }),
+    export: async (employeeId: number, month: number, year: number) => {
+      const blob = await requestBlob(`/api/timesheet/${employeeId}/export?month=${month}&year=${year}`);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `fichadas_${month.toString().padStart(2, "0")}_${year}.xlsx`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    },
   },
 
   payroll: {
