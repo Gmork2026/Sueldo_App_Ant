@@ -79,7 +79,7 @@ async def get_payroll(
     user: CurrentUser,
     db: AsyncSession = Depends(get_db),
 ):
-    if user.role != "admin":
+    if user.role not in ("admin", "superadmin"):
         emp_result = await db.execute(
             select(Employee).where(
                 Employee.id == employee_id, Employee.user_id == user.id
@@ -105,7 +105,7 @@ async def export_payroll_excel(
     if not payroll:
         raise HTTPException(status_code=404, detail="Liquidación no encontrada")
 
-    if user.role != "admin":
+    if user.role not in ("admin", "superadmin"):
         emp_result = await db.execute(
             select(Employee).where(
                 Employee.id == payroll.employee_id, Employee.user_id == user.id

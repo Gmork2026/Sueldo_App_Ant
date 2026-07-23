@@ -42,7 +42,7 @@ async def get_employee(employee_id: int, user: CurrentUser, db: AsyncSession = D
     if not employee:
         raise HTTPException(status_code=404, detail="Empleado no encontrado")
 
-    if user.role != "admin" and employee.user_id != user.id:
+    if user.role not in ("admin", "superadmin") and employee.user_id != user.id:
         raise HTTPException(status_code=403, detail="Acceso denegado")
 
     return employee

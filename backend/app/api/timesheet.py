@@ -57,7 +57,7 @@ async def get_timesheet(
     user: CurrentUser,
     db: AsyncSession = Depends(get_db),
 ):
-    if user.role != "admin":
+    if user.role not in ("admin", "superadmin"):
         from app.models.employee import Employee
         emp_result = await db.execute(
             select(Employee).where(Employee.id == employee_id, Employee.user_id == user.id)
@@ -83,7 +83,7 @@ async def create_or_update_record(
     user: CurrentUser,
     db: AsyncSession = Depends(get_db),
 ):
-    if user.role != "admin":
+    if user.role not in ("admin", "superadmin"):
         from app.models.employee import Employee
         emp_result = await db.execute(
             select(Employee).where(
@@ -142,7 +142,7 @@ async def update_record(
     if not record:
         raise HTTPException(status_code=404, detail="Registro no encontrado")
 
-    if user.role != "admin":
+    if user.role not in ("admin", "superadmin"):
         from app.models.employee import Employee
         emp_result = await db.execute(
             select(Employee).where(
@@ -178,7 +178,7 @@ async def delete_record(record_id: int, user: CurrentUser, db: AsyncSession = De
     if not record:
         raise HTTPException(status_code=404, detail="Registro no encontrado")
 
-    if user.role != "admin":
+    if user.role not in ("admin", "superadmin"):
         from app.models.employee import Employee
         emp_result = await db.execute(
             select(Employee).where(
@@ -199,7 +199,7 @@ async def bulk_fill_month(
     user: CurrentUser,
     db: AsyncSession = Depends(get_db),
 ):
-    if user.role != "admin":
+    if user.role not in ("admin", "superadmin"):
         from app.models.employee import Employee
         emp_result = await db.execute(
             select(Employee).where(
@@ -271,7 +271,7 @@ async def export_timesheet_excel(
     user: CurrentUser,
     db: AsyncSession = Depends(get_db),
 ):
-    if user.role != "admin":
+    if user.role not in ("admin", "superadmin"):
         emp_result = await db.execute(
             select(Employee).where(Employee.id == employee_id, Employee.user_id == user.id)
         )
