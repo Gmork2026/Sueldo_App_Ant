@@ -29,6 +29,14 @@ function timeToMinutes(t: string): number {
   return h * 60 + m;
 }
 
+function formatHours(totalDecimal: number): string {
+  if (totalDecimal <= 0) return "0:00";
+  const h = Math.floor(totalDecimal);
+  const m = Math.round((totalDecimal - h) * 60);
+  if (m === 60) return `${h + 1}:00`;
+  return `${h}:${String(m).padStart(2, "0")}`;
+}
+
 const DIURNA_START = 360;  // 06:00
 const DIURNA_END = 1260;   // 21:00
 
@@ -84,6 +92,7 @@ export default function FichadasPage() {
   const [loading, setLoading] = useState(false);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [bulkFilling, setBulkFilling] = useState(false);
   const [exporting, setExporting] = useState(false);
 
@@ -120,7 +129,7 @@ export default function FichadasPage() {
     });
   }, [isAdmin, user]);
 
-  const loadRecords = async () => {
+  const loadRecords = useCallback(async () => {
     if (!selectedEmp) return;
     setLoading(true);
     try {
@@ -130,9 +139,9 @@ export default function FichadasPage() {
       setRecords([]);
     }
     setLoading(false);
-  };
+  }, [selectedEmp, month, year]);
 
-  useEffect(() => { loadRecords(); }, [selectedEmp, month, year]);
+  useEffect(() => { loadRecords(); }, [loadRecords]);
 
   const recordMap = useMemo(() => {
     const map: Record<string, TimesheetRecord> = {};
@@ -267,7 +276,7 @@ export default function FichadasPage() {
     const [eh, em] = bulkForm.entry_time.split(":").map(Number);
     const [xh, xm] = bulkForm.exit_time.split(":").map(Number);
     const diff = (xh * 60 + xm - eh * 60 - em) / 60;
-    return diff > 0 ? diff.toFixed(2) : "";
+    return diff > 0 ? formatHours(diff) : "";
   };
 
   const handleBulkSave = async () => {
@@ -291,6 +300,8 @@ export default function FichadasPage() {
       }
       await loadRecords();
       setSelectedDays(new Set());
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
     } catch (err) {
       alert(err instanceof Error ? err.message : "Error al guardar");
     }
@@ -315,6 +326,8 @@ export default function FichadasPage() {
       await api.timesheet.upsert(data);
       await loadRecords();
       setSelectedDay(null);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
     } catch (err) {
       alert(err instanceof Error ? err.message : "Error al guardar");
     }
@@ -365,7 +378,7 @@ export default function FichadasPage() {
     const [eh, em] = form.entry_time.split(":").map(Number);
     const [xh, xm] = form.exit_time.split(":").map(Number);
     const diff = (xh * 60 + xm - eh * 60 - em) / 60;
-    return diff > 0 ? diff.toFixed(2) : "";
+    return diff > 0 ? formatHours(diff) : "";
   };
 
   const numDays = daysInMonth(year, month);
@@ -378,6 +391,12 @@ export default function FichadasPage() {
   return (
     <AppLayout>
       <h1 className="text-2xl font-bold mb-6">Ficha horas</h1>
+
+      {saved && (
+        <div className="mb-4 px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-lg text-sm font-medium">
+          Registro guardado correctamente
+        </div>
+      )}
 
       <div className="flex gap-4 mb-6 flex-wrap">
         {isAdmin ? (
@@ -411,7 +430,7 @@ export default function FichadasPage() {
       {selectedEmp && (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 mb-6">
           <div className="bg-card dark:bg-gray-800 rounded-xl shadow p-3 border border-border dark:border-gray-700 text-center">
-            <div className="text-xl font-bold text-blue-600 dark:text-blue-400">{totalHours.toFixed(1)}</div>
+            <div className="text-xl font-bold text-blue-600 dark:text-blue-400">{formatHours(totalHours)}</div>
             <div className="text-[10px] text-muted dark:text-gray-400">Horas totales</div>
           </div>
           <div className="bg-card dark:bg-gray-800 rounded-xl shadow p-3 border border-border dark:border-gray-700 text-center">
@@ -427,15 +446,15 @@ export default function FichadasPage() {
             <div className="text-[10px] text-muted dark:text-gray-400">Feriados trabajados</div>
           </div>
           <div className="bg-card dark:bg-gray-800 rounded-xl shadow p-3 border border-border dark:border-gray-700 text-center">
-            <div className="text-xl font-bold text-yellow-600 dark:text-yellow-400">{totalDiurnas.toFixed(1)}</div>
+            <div className="text-xl font-bold text-yellow-600 dark:text-yellow-400">{formatHours(totalDiurnas)}</div>
             <div className="text-[10px] text-muted dark:text-gray-400">Horas diurnas</div>
           </div>
           <div className="bg-card dark:bg-gray-800 rounded-xl shadow p-3 border border-border dark:border-gray-700 text-center">
-            <div className="text-xl font-bold text-indigo-600 dark:text-indigo-400">{totalNocturnas.toFixed(1)}</div>
+            <div className="text-xl font-bold text-indigo-600 dark:text-indigo-400">{formatHours(totalNocturnas)}</div>
             <div className="text-[10px] text-muted dark:text-gray-400">Horas nocturnas</div>
           </div>
           <div className="bg-card dark:bg-gray-800 rounded-xl shadow p-3 border border-border dark:border-gray-700 text-center">
-            <div className="text-xl font-bold text-red-600 dark:text-red-400">{totalExtras.toFixed(1)}</div>
+            <div className="text-xl font-bold text-red-600 dark:text-red-400">{formatHours(totalExtras)}</div>
             <div className="text-[10px] text-muted dark:text-gray-400">Horas extras</div>
           </div>
         </div>
@@ -527,7 +546,7 @@ export default function FichadasPage() {
                   {rec?.is_franco && <div className="text-[10px] text-purple-600 dark:text-purple-400 font-medium">Franco</div>}
                   {rec?.is_holiday && <div className="text-[10px] text-orange-600 dark:text-orange-400 font-medium truncate">{rec.holiday_name || "Fer."}</div>}
                   {rec && !rec.is_franco && rec.total_hours > 0 && (
-                    <div className="text-[10px] text-green-600 dark:text-green-400 font-medium">{rec.total_hours}h</div>
+                    <div className="text-[10px] text-green-600 dark:text-green-400 font-medium">{formatHours(rec.total_hours)}hs</div>
                   )}
                   {rec && !rec.is_franco && rec.entry_time && (
                     <div className="text-[9px] text-gray-400 dark:text-gray-500 truncate">{rec.entry_time}-{rec.exit_time || "?"}</div>
